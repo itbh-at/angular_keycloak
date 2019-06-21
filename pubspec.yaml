@@ -9,7 +9,10 @@ dependencies:
   js: ^0.6.1+1
 
 dev_dependencies:
+  angular: ^5.3.1
+  angular_components: ^0.13.0+1
+
   build_runner: ^1.5.2
   build_test: ^0.10.8
   build_web_compilers: ^2.1.1
-  test: ^1.6.4
+  test: ^1.5.3
