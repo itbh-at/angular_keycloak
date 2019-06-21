@@ -1,3 +1,6 @@
+import 'dart:convert' show json;
+
+import 'js_interop/common.dart' as jsUtil;
 import 'js_interop/keycloak.dart';
 import 'js_interop/promise.dart';
 
@@ -10,8 +13,14 @@ class KeycloakService {
   String get clientId => _keycloakInstance.clientId;
   String get realm => _keycloakInstance.realm;
 
-  KeycloakService([config]) {
-    _keycloakInstance = Keycloak(config);
+  KeycloakService([String filepath]) {
+    _keycloakInstance = Keycloak(filepath);
+  }
+
+  KeycloakService.parameters(Map params) {
+    var obj = jsUtil.parse(jsUtil.stringify(json.encode(params)));
+    print('the object $obj');
+    _keycloakInstance = Keycloak(obj);
   }
 
   Future init() async {
