@@ -6,7 +6,7 @@ import 'package:keycloak_dart/keycloak.dart';
 void main() {
   group('Initialization.', () {
     test('Create keycloak instance by config file', () async {
-      var service = KeycloakService('keycloak.json');
+      final service = KeycloakService('keycloak.json');
       await service.init();
 
       expect(service.realm, 'demo');
@@ -14,18 +14,31 @@ void main() {
     });
 
     test('Create keycloak instance by parameters', () async {
-      var service = KeycloakService.parameters({
+      final service = KeycloakService.parameters({
         "realm": "demo",
-        "auth-server-url": "http://localhost:8080/auth",
-        "ssl-required": "external",
-        "resource": "angulardart_alpha",
-        "public-client": true,
-        "confidential-port": 0
+        "authServerUrl": "http://localhost:8080/auth",
+        "clientId": "angulardart_beta"
       });
       await service.init();
 
       expect(service.realm, 'demo');
       expect(service.clientId, 'angulardart_beta');
+    });
+
+    test('Create 2 separated instances', () async {
+      final serviceAlpha = KeycloakService();
+      final serviceBeta = KeycloakService.parameters({
+        "realm": "demo",
+        "authServerUrl": "http://localhost:8080/auth",
+        "clientId": "angulardart_beta"
+      });
+
+      await Future.wait([serviceAlpha.init(), serviceBeta.init()]);
+
+      expect(serviceAlpha.realm, 'demo');
+      expect(serviceBeta.realm, 'demo');
+      expect(serviceAlpha.clientId, 'angulardart_alpha');
+      expect(serviceBeta.clientId, 'angulardart_beta');
     });
   });
 }

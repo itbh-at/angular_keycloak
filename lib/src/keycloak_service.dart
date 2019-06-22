@@ -18,9 +18,7 @@ class KeycloakService {
   }
 
   KeycloakService.parameters(Map params) {
-    var obj = jsUtil.parse(jsUtil.stringify(json.encode(params)));
-    print('the object $obj');
-    _keycloakInstance = Keycloak(obj);
+    _keycloakInstance = Keycloak(jsUtil.parse(json.encode(params)));
   }
 
   Future init() async {
