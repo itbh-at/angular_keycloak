@@ -3,10 +3,12 @@ import 'package:angular_components/material_button/material_button.dart';
 
 import 'package:keycloak_dart/keycloak.dart';
 
+import 'keycloak_service_provider.dart';
+
 @Component(
   selector: 'my-app',
   directives: [MaterialButtonComponent, NgIf],
-  providers: [ClassProvider(KeycloakService)],
+  providers: [keycloakServiceProvider],
   template: '''
     <h1>Keycloak example</h1>
 
