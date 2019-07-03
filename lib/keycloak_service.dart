@@ -56,6 +56,10 @@ class KeycloakService {
     return chosenId;
   }
 
+  void login({String id}) {
+    _getInstance(id).login();
+  }
+
   KeycloakInstance _getInstance([String id]) {
     assert(_instances.isNotEmpty,
         'Trying to get Keycloak instance of $id but none has registered yet');
