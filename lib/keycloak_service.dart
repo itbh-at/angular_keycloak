@@ -4,8 +4,22 @@ enum InitLoadType { standard, loginRequired, checkSSO }
 
 enum InitFlowType { standart, implicit, hybrid }
 
+class KeycloackServiceInstanceConfig {
+  String id;
+  String configFilePath;
+  InitLoadType loadType = InitLoadType.standard;
+  InitFlowType flowType = InitFlowType.standart;
+}
+
+class KeycloackServiceConfig {
+  final instanceConfigs = List<KeycloackServiceInstanceConfig>();
+}
+
 class KeycloakService {
   final _instances = <String, KeycloakInstance>{};
+  final KeycloackServiceConfig _config;
+
+  KeycloakService(this._config);
 
   bool isAuthenticated({String id}) => _getInstance(id).authenticated;
 
@@ -17,19 +31,15 @@ class KeycloakService {
   }
 
   //TODO: Map init?
-  Future<String> registerInstance(
-      {String id,
-      String configFilePath,
-      InitLoadType loadType = InitLoadType.standard,
-      InitFlowType flowType = InitFlowType.standart}) async {
+  Future<String> registerInstance(KeycloackServiceInstanceConfig config) async {
     // Create the instance and store it by id
-    final instance = KeycloakInstance(configFilePath);
-    final chosenId = id ?? instance.hashCode.toString();
+    final instance = KeycloakInstance(config.configFilePath);
+    final chosenId = config.id ?? instance.hashCode.toString();
     _instances[chosenId] = instance;
 
     // Initialize the instance
     final initOption = KeycloakInitOptions();
-    switch (loadType) {
+    switch (config.loadType) {
       case InitLoadType.loginRequired:
         initOption.onLoad = 'login-required';
         break;
@@ -40,7 +50,7 @@ class KeycloakService {
         break;
     }
 
-    switch (flowType) {
+    switch (config.flowType) {
       case InitFlowType.implicit:
         initOption.flow = 'implicit';
         break;
@@ -58,6 +68,16 @@ class KeycloakService {
 
   void login({String id}) {
     _getInstance(id).login();
+  }
+
+  void verifyInstance() async {
+    if (_instances.isNotEmpty) {
+      return;
+    }
+
+    for (final instanceConfig in _config.instanceConfigs) {
+      await registerInstance(instanceConfig);
+    }
   }
 
   KeycloakInstance _getInstance([String id]) {

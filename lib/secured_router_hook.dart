@@ -9,7 +9,8 @@ class SecuredRouterHook implements RouterHook {
   SecuredRouterHook(this._keycloakService);
 
   Future<String> navigationPath(String path, NavigationParams params) async {
-    print('secruing path $path');
+    print(
+        'secruing path $path, keycloak is ${_keycloakService.isAuthenticated()}');
     return path;
   }
 
@@ -32,6 +33,7 @@ class SecuredRouterHook implements RouterHook {
   }
 
   Future<bool> canNavigate() async {
+    await _keycloakService.verifyInstance();
     // Provided as a default if someone extends or mixes-in this interface.
     return true;
   }

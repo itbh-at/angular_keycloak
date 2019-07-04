@@ -7,10 +7,15 @@ import 'package:angular_keycloak/keycloak_service.dart';
 import 'app/example_app_component.template.dart' as ng;
 import 'main.template.dart' as self;
 
+KeycloackServiceConfig keycloakConfigFactory() => KeycloackServiceConfig()
+  ..instanceConfigs
+      .add(KeycloackServiceInstanceConfig()..loadType = InitLoadType.standard);
+
 @GenerateInjector([
+  FactoryProvider(KeycloackServiceConfig, keycloakConfigFactory),
   ClassProvider(KeycloakService),
   ClassProvider(RouterHook, useClass: SecuredRouterHook),
-  routerProviders, // You can use routerProviders in production
+  routerProvidersHash, // You can use routerProviders in production
 ])
 final InjectorFactory injector = self.injector$Injector;
 
