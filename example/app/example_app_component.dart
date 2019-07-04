@@ -18,7 +18,15 @@ import 'routes.dart';
   exports: [Routes, RoutePaths],
   //Blanket provider for all kind of Angular Component. VERY BAD. But too lazy to find the right one for each component.
   providers: [popupBindings],
-  templateUrl: 'example_app_component.html',
+  template: '''
+  <h1>Keycloak Service Example</h1>
+  <material-button (trigger)="(login)">Login</material-button>
+  <a [routerLink]="RoutePaths.customer.toUrl()">Customer</a>
+  <a [routerLink]="RoutePaths.employee.toUrl()">Employee</a>
+  <a [routerLink]="RoutePaths.public.toUrl()">Public</a>
+
+  <router-outlet [routes]="Routes.all"></router-outlet>
+''',
 )
 class ExampleAppComponent {
   final KeycloakService _keycloakService;

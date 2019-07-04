@@ -1,19 +1,24 @@
 import 'package:angular_router/angular_router.dart' show RouteDefinition;
 
-import 'customer/dinning_component.template.dart' as dinning_template;
-import 'public/about_component.template.dart' as about_template;
+import 'customer/customer_component.template.dart' as customer_template;
+import 'employee/employee_component.template.dart' as employee_template;
+import 'public/public_component.template.dart' as public_template;
 
 import 'route_paths.dart';
 export 'route_paths.dart';
 
 class Routes {
-  static final about = RouteDefinition(
-      routePath: RoutePaths.about,
-      component: about_template.AboutComponentNgFactory);
+  static final customer = RouteDefinition(
+      routePath: RoutePaths.customer,
+      component: customer_template.CustomerComponentNgFactory);
 
-  static final dinning = RouteDefinition(
-      routePath: RoutePaths.dinning,
-      component: dinning_template.DinningComponentNgFactory);
+  static final employee = RouteDefinition(
+      routePath: RoutePaths.employee,
+      component: employee_template.EmployeeComponentNgFactory);
 
-  static final all = [about, dinning];
+  static final public = RouteDefinition(
+      routePath: RoutePaths.public,
+      component: public_template.PublicComponentNgFactory);
+
+  static final all = [customer, employee, public];
 }
