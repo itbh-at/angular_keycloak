@@ -5,4 +5,4 @@ import 'package:angular/angular.dart';
   <p>This is a example for keycloak service in AngularDart</p>
   <p>Everyone can stand in front of this door, even unauthenticated visitor</p>
   ''')
-class DoorComponent extends Component {}
+class DoorComponent {}

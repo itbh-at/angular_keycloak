@@ -4,4 +4,4 @@ import 'package:angular/angular.dart';
   <h2>VIP room</h2>
   <p>VIP customer only</p>
   ''')
-class VipRoomComponent extends Component {}
+class VipRoomComponent {}

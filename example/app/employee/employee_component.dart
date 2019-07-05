@@ -18,4 +18,4 @@ import 'routes.dart';
   <router-outlet [routes]="Routes.all">
   </router-outlet>
   ''')
-class EmployeeComponent extends Component {}
+class EmployeeComponent {}

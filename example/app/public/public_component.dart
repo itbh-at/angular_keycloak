@@ -18,4 +18,4 @@ import 'routes.dart';
   </div>
   <router-outlet [routes]="Routes.all"></router-outlet>
   ''')
-class PublicComponent extends Component {}
+class PublicComponent {}
