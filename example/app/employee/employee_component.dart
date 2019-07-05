@@ -13,10 +13,9 @@ import 'routes.dart';
   <p>Only employee can come here.</p>
 
   <div class="sub-nav">
-  <a [routerLink]="RoutePaths.bossRoom.toUrl()">Boss Room</a>
-  <a [routerLink]="RoutePaths.cashier.toUrl()">Cashier</a>
   <a [routerLink]="RoutePaths.kitchen.toUrl()">Kitchen</a>
   </div>
-  <router-outlet [routes]="Routes.all"></router-outlet>
+  <router-outlet [routes]="Routes.all">
+  </router-outlet>
   ''')
 class EmployeeComponent extends Component {}
