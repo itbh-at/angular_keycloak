@@ -1,3 +1,5 @@
+import 'dart:async' show FutureOr;
+
 import 'package:angular/di.dart';
 import 'package:angular_keycloak/keycloak_service.dart';
 import 'package:angular_router/angular_router.dart';
@@ -35,19 +37,20 @@ class SecuredRouterHook implements RouterHook {
         final url = securingPath.toUrl();
         print('url is $url');
         if (url == path) {
-          final authorized = await _keycloakService.authenticateAndAuthorize(
-              id: setting.keycloakInstanceId, roles: setting.roles);
-          if (authorized) {
-            print('authenticated for ${setting.keycloakInstanceId}');
-          } else {
-            print('not authendticated for ${setting.keycloakInstanceId}');
-            return setting.redirectPath.toUrl();
+          if (await _verifyOrInitiateKeycloakInstance(
+              setting.keycloakInstanceId)) {
+            if (!_isAuthenticated(setting.keycloakInstanceId)) {
+              print('not authendticated for ${setting.keycloakInstanceId}');
+              return setting.redirectPath.toUrl();
+            } else if (!_isAuthorized(
+                setting.keycloakInstanceId, setting.roles)) {
+              print('not authorized for ${setting.keycloakInstanceId}');
+              return setting.redirectPath.toUrl();
+            }
           }
         }
       }
     }
-    print(
-        'secured path $path, keycloak is ${_keycloakService.isAuthenticated()}');
     return path;
   }
 
@@ -78,5 +81,30 @@ class SecuredRouterHook implements RouterHook {
       RouterState newState) async {
     // Provided as a default if someone extends or mixes-in this interface.
     return false;
+  }
+
+  FutureOr _verifyOrInitiateKeycloakInstance(String instanceId) async {
+    if (!_keycloakService.isInstanceInitiated(instanceId: instanceId)) {
+      try {
+        await _keycloakService.initInstance(instanceId: instanceId);
+      } catch (e) {
+        print('Error when initiating keycloak instance of $instanceId. $e');
+        return false;
+      }
+    }
+    return true;
+  }
+
+  bool _isAuthenticated(String instanceId) {
+    return _keycloakService.isAuthenticated(id: instanceId);
+  }
+
+  bool _isAuthorized(String instanceId, Set<String> rolesAllowed) {
+    final realmRoles = _keycloakService.getRealmRoles(id: instanceId).toSet();
+    final resourceRoles =
+        _keycloakService.getResourceRoles(id: instanceId).toSet();
+    final combinedRoles = realmRoles.union(resourceRoles);
+
+    return combinedRoles.containsAll(rolesAllowed);
   }
 }

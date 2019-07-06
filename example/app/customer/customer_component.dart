@@ -25,13 +25,13 @@ import 'routes.dart';
   </div>
   <router-outlet [routes]="Routes.all"></router-outlet>
   ''')
-class CustomerComponent implements OnInit {
+class CustomerComponent implements OnActivate {
   final KeycloakService _keycloakService;
   var name = "no one";
 
   CustomerComponent(this._keycloakService);
 
-  void ngOnInit() async {
+  void onActivate(RouterState previous, RouterState current) async {
     name = await _keycloakService.getUserName();
   }
 

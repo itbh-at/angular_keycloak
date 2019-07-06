@@ -1,3 +1,4 @@
+import 'package:angular/angular.dart';
 import 'package:angular_router/angular_router.dart';
 import 'package:keycloak/keycloak.dart';
 
@@ -22,7 +23,11 @@ class KeycloakService {
   final Location _location;
   final _instances = <String, KeycloakInstance>{};
 
-  KeycloakService(this._config, this._location);
+  KeycloakService(@Optional() this._config, @Optional() this._location);
+
+  bool isInstanceInitiated({String instanceId}) => instanceId == null
+      ? _instances.isNotEmpty
+      : _instances.containsKey(instanceId);
 
   bool isAuthenticated({String id}) => _getInstance(id).authenticated;
 
@@ -31,6 +36,17 @@ class KeycloakService {
   List<String> getResourceRoles({String id, String clientId}) {
     clientId = clientId ?? _getInstance(id).clientId;
     return _getInstance(id).resourceAccess[clientId].roles;
+  }
+
+  Future initInstance({String instanceId}) async {
+    if (_config == null) {
+      throw Exception(
+          'Must have KeycloackServiceConfig defined to use initInstance');
+    }
+
+    final instanceConfig =
+        _config.instanceConfigs.firstWhere((config) => config.id == instanceId);
+    return registerInstance(instanceConfig);
   }
 
   //TODO: Map init?
@@ -65,13 +81,12 @@ class KeycloakService {
     }
 
     if (config.redirectRoutePath != null) {
+      //TODO: actual way to get full redirection path
       initOption.redirectUri =
           'http://localhost:2700/${_location.prepareExternalUrl(config.redirectRoutePath.toUrl())}';
     }
 
-    var t = await instance.init(initOption);
-    print('initing int $chosenId $t');
-
+    await instance.init(initOption);
     return chosenId;
   }
 
@@ -89,46 +104,6 @@ class KeycloakService {
   Future<String> getUserName({String id}) async {
     final profile = await _getInstance(id).loadUserProfile();
     return profile.username;
-  }
-
-  Future<bool> authenticateAndAuthorize({String id, Set<String> roles}) async {
-    //TODO: Handle no id
-    if (!_instances.containsKey(id)) {
-      final instanceConfig =
-          _config.instanceConfigs.firstWhere((config) => config.id == id);
-      try {
-        await registerInstance(instanceConfig);
-      } catch (e) {
-        print('register error $e');
-        return false;
-      }
-    }
-    final instance = _getInstance(id);
-    if (instance.authenticated == false) {
-      return false;
-    } else if (roles.isNotEmpty) {
-      final resourceRoles =
-          instance.resourceAccess[instance.clientId].roles.toSet();
-      return resourceRoles.containsAll(roles);
-    }
-    return true;
-  }
-
-  void verifyInstance() async {
-    if (_instances.isNotEmpty) {
-      return;
-    }
-
-    for (final instanceConfig in _config.instanceConfigs) {
-      print('doing instance');
-
-      try {
-        await registerInstance(instanceConfig);
-      } catch (e) {
-        print('register error');
-        continue;
-      }
-    }
   }
 
   KeycloakInstance _getInstance([String id]) {
