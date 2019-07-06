@@ -1,3 +1,4 @@
+import 'package:angular_router/angular_router.dart';
 import 'package:keycloak/keycloak.dart';
 
 enum InitLoadType { standard, loginRequired, checkSSO }
@@ -7,6 +8,7 @@ enum InitFlowType { standart, implicit, hybrid }
 class KeycloackServiceInstanceConfig {
   String id;
   String configFilePath;
+  RoutePath redirectRoutePath;
   InitLoadType loadType = InitLoadType.standard;
   InitFlowType flowType = InitFlowType.standart;
 }
@@ -16,10 +18,11 @@ class KeycloackServiceConfig {
 }
 
 class KeycloakService {
-  final _instances = <String, KeycloakInstance>{};
   final KeycloackServiceConfig _config;
+  final Location _location;
+  final _instances = <String, KeycloakInstance>{};
 
-  KeycloakService(this._config);
+  KeycloakService(this._config, this._location);
 
   bool isAuthenticated({String id}) => _getInstance(id).authenticated;
 
@@ -61,13 +64,50 @@ class KeycloakService {
         break;
     }
 
-    await instance.init(initOption);
+    if (config.redirectRoutePath != null) {
+      initOption.redirectUri =
+          'http://localhost:2700/${_location.prepareExternalUrl(config.redirectRoutePath.toUrl())}';
+    }
+
+    var t = await instance.init(initOption);
+    print('initing int $chosenId $t');
 
     return chosenId;
   }
 
-  void login({String id}) {
-    _getInstance(id).login();
+  void login({String id, String redirectUri}) {
+    var realUrl =
+        'http://localhost:2700/${_location.prepareExternalUrl(redirectUri)}';
+    print('login redirecting to $realUrl');
+    _getInstance(id).login(KeycloakLoginOptions()..redirectUri = realUrl);
+  }
+
+  void logout({String id}) {
+    _getInstance(id).logout();
+  }
+
+  Future<String> getUserName({String id}) async {
+    final profile = await _getInstance(id).loadUserProfile();
+    return profile.username;
+  }
+
+  Future<bool> authenticateAndAuthorize({String id, List<String> roles}) async {
+    //TODO: Handle no id
+    if (!_instances.containsKey(id)) {
+      final instanceConfig =
+          _config.instanceConfigs.firstWhere((config) => config.id == id);
+      try {
+        await registerInstance(instanceConfig);
+      } catch (e) {
+        print('register error $e');
+        return false;
+      }
+    }
+    final instance = _getInstance(id);
+    if (instance.authenticated == false) {
+      return false;
+    }
+    return true;
   }
 
   void verifyInstance() async {
@@ -76,7 +116,14 @@ class KeycloakService {
     }
 
     for (final instanceConfig in _config.instanceConfigs) {
-      await registerInstance(instanceConfig);
+      print('doing instance');
+
+      try {
+        await registerInstance(instanceConfig);
+      } catch (e) {
+        print('register error');
+        continue;
+      }
     }
   }
 
