@@ -5,7 +5,7 @@ import 'package:angular_router/angular_router.dart';
 class SecureRouteSetting {
   String keycloakInstanceId;
   final paths = List<RoutePath>();
-  List<String> roles;
+  final roles = Set<String>();
   RoutePath redirectPath;
 }
 
@@ -36,7 +36,7 @@ class SecuredRouterHook implements RouterHook {
         print('url is $url');
         if (url == path) {
           final authorized = await _keycloakService.authenticateAndAuthorize(
-              id: setting.keycloakInstanceId);
+              id: setting.keycloakInstanceId, roles: setting.roles);
           if (authorized) {
             print('authenticated for ${setting.keycloakInstanceId}');
           } else {

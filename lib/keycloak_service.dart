@@ -91,7 +91,7 @@ class KeycloakService {
     return profile.username;
   }
 
-  Future<bool> authenticateAndAuthorize({String id, List<String> roles}) async {
+  Future<bool> authenticateAndAuthorize({String id, Set<String> roles}) async {
     //TODO: Handle no id
     if (!_instances.containsKey(id)) {
       final instanceConfig =
@@ -106,6 +106,10 @@ class KeycloakService {
     final instance = _getInstance(id);
     if (instance.authenticated == false) {
       return false;
+    } else if (roles.isNotEmpty) {
+      final resourceRoles =
+          instance.resourceAccess[instance.clientId].roles.toSet();
+      return resourceRoles.containsAll(roles);
     }
     return true;
   }

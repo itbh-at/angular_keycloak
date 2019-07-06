@@ -7,29 +7,49 @@ import 'package:angular_keycloak/keycloak_service.dart';
 import 'app/example_app_component.template.dart' as ng;
 import 'main.template.dart' as self;
 
-import 'app/route_paths.dart';
+import 'app/route_paths.dart' as main_paths;
+import 'app/customer/route_paths.dart' as customer_paths;
+import 'app/employee/route_paths.dart' as employee_paths;
 
 KeycloackServiceConfig keycloakConfigFactory() => KeycloackServiceConfig()
   ..instanceConfigs.add(KeycloackServiceInstanceConfig()
     ..id = 'employee'
     ..configFilePath = 'employee.json'
-    ..redirectRoutePath = RoutePaths.employee
+    ..redirectRoutePath = main_paths.RoutePaths.employee
     ..loadType = InitLoadType.checkSSO)
   ..instanceConfigs.add(KeycloackServiceInstanceConfig()
     ..id = 'customer'
     ..configFilePath = 'customer.json'
-    ..redirectRoutePath = RoutePaths.customer
+    ..redirectRoutePath = main_paths.RoutePaths.customer
     ..loadType = InitLoadType.checkSSO);
 
 SecuredRouterHookSetting hookSettingFactory() => SecuredRouterHookSetting()
   ..settings.add(SecureRouteSetting()
     ..keycloakInstanceId = 'customer'
-    ..redirectPath = RoutePaths.customerLogin
-    ..paths.add(RoutePaths.customer))
+    ..redirectPath = main_paths.RoutePaths.customerLogin
+    ..roles.add('member')
+    ..paths.add(main_paths.RoutePaths.customer))
+  ..settings.add(SecureRouteSetting()
+    ..keycloakInstanceId = 'customer'
+    ..redirectPath = main_paths.RoutePaths.public
+    ..roles.add('vip')
+    ..paths.add(customer_paths.RoutePaths.vip))
   ..settings.add(SecureRouteSetting()
     ..keycloakInstanceId = 'employee'
-    ..redirectPath = RoutePaths.employeeLogin
-    ..paths.add(RoutePaths.employee));
+    ..redirectPath = main_paths.RoutePaths.employeeLogin
+    ..roles.add('staff')
+    ..paths.add(main_paths.RoutePaths.employee))
+  ..settings.add(SecureRouteSetting()
+    ..keycloakInstanceId = 'employee'
+    ..redirectPath = main_paths.RoutePaths.public
+    ..roles.add('staff')
+    ..roles.add('supervisor')
+    ..paths.add(employee_paths.RoutePaths.cashier))
+  ..settings.add(SecureRouteSetting()
+    ..keycloakInstanceId = 'employee'
+    ..redirectPath = main_paths.RoutePaths.public
+    ..roles.add('boss')
+    ..paths.add(employee_paths.RoutePaths.bossRoom));
 
 @GenerateInjector([
   FactoryProvider(KeycloackServiceConfig, keycloakConfigFactory),
