@@ -4,47 +4,66 @@ import 'package:angular/di.dart';
 import 'package:angular_keycloak/keycloak_service.dart';
 import 'package:angular_router/angular_router.dart';
 
-class SecureRouteSetting {
+class SecuredRoute {
   String keycloakInstanceId;
-  final paths = List<RoutePath>();
-  final roles = Set<String>();
+  List<RoutePath> paths;
+  List<String> authorizedRoles;
   RoutePath redirectPath;
+  bool authenticatingSetting;
+
+  SecuredRoute.authentication(
+      {this.keycloakInstanceId, this.paths, this.redirectPath})
+      : authenticatingSetting = true;
+  SecuredRoute.authorization(
+      {this.keycloakInstanceId,
+      this.paths,
+      this.authorizedRoles,
+      this.redirectPath})
+      : authenticatingSetting = false;
 }
 
-class SecuredRouterHookSetting {
-  final settings = List<SecureRouteSetting>();
+class SecuredRouterHookConfig {
+  final settings = List<SecuredRoute>();
 }
 
 @Injectable()
 class SecuredRouterHook implements RouterHook {
   final KeycloakService _keycloakService;
   final LocationStrategy _locationStrategy;
-  final SecuredRouterHookSetting _setting;
+  final SecuredRouterHookConfig _setting;
+
+  final _redirectingSetting = <SecuredRoute>[];
+  final _blockingSetting = <SecuredRoute>[];
 
   SecuredRouterHook(
-      this._keycloakService, this._locationStrategy, this._setting);
+      this._keycloakService, this._locationStrategy, this._setting) {
+    for (final setting in _setting.settings) {
+      if (setting.redirectPath != null) {
+        _redirectingSetting.add(setting);
+      } else {
+        _blockingSetting.add(setting);
+      }
+    }
+  }
 
   Future<String> navigationPath(String path, NavigationParams params) async {
-    print('secruing path $path');
     if (_locationStrategy is HashLocationStrategy) {
       var andPlace = path.indexOf('&');
       if (andPlace != -1) {
         path = path.substring(0, andPlace);
       }
     }
-    for (final setting in _setting.settings) {
+    for (final setting in _redirectingSetting) {
       for (final securingPath in setting.paths) {
-        final url = securingPath.toUrl();
-        print('url is $url');
-        if (url == path) {
+        final securedPath = securingPath.toUrl();
+        if (_match(path, securedPath)) {
           if (await _verifyOrInitiateKeycloakInstance(
               setting.keycloakInstanceId)) {
             if (!_isAuthenticated(setting.keycloakInstanceId)) {
-              print('not authendticated for ${setting.keycloakInstanceId}');
               return setting.redirectPath.toUrl();
-            } else if (!_isAuthorized(
-                setting.keycloakInstanceId, setting.roles)) {
-              print('not authorized for ${setting.keycloakInstanceId}');
+            } else if (!setting.authenticatingSetting &&
+                !_isAuthorized(
+                    setting.keycloakInstanceId, setting.authorizedRoles)) {
               return setting.redirectPath.toUrl();
             }
           }
@@ -62,7 +81,25 @@ class SecuredRouterHook implements RouterHook {
 
   Future<bool> canActivate(Object componentInstance, RouterState oldState,
       RouterState newState) async {
-    // Provided as a default if someone extends or mixes-in this interface.
+    final path = newState.path;
+    for (final setting in _blockingSetting) {
+      for (final securingPath in setting.paths) {
+        final securedPath = securingPath.toUrl();
+        if (_match(path, securedPath)) {
+          if (await _verifyOrInitiateKeycloakInstance(
+              setting.keycloakInstanceId)) {
+            if (!_isAuthenticated(setting.keycloakInstanceId)) {
+              return false;
+            } else if (!setting.authenticatingSetting &&
+                !_isAuthorized(
+                    setting.keycloakInstanceId, setting.authorizedRoles)) {
+              return false;
+            }
+          }
+        }
+      }
+    }
+
     return true;
   }
 
@@ -83,6 +120,23 @@ class SecuredRouterHook implements RouterHook {
     return false;
   }
 
+  bool _match(String path, String securedPath) {
+    if (path == securedPath) {
+      return true;
+    } else if (securedPath.length > path.length) {
+      return false;
+    } else {
+      var tokens = path.split('/');
+      var securedTokens = securedPath.split('/');
+      for (var i = 0; i < securedTokens.length; i++) {
+        if (tokens[i] != securedTokens[i]) {
+          return false;
+        }
+      }
+      return true;
+    }
+  }
+
   FutureOr _verifyOrInitiateKeycloakInstance(String instanceId) async {
     if (!_keycloakService.isInstanceInitiated(instanceId: instanceId)) {
       try {
@@ -99,7 +153,7 @@ class SecuredRouterHook implements RouterHook {
     return _keycloakService.isAuthenticated(id: instanceId);
   }
 
-  bool _isAuthorized(String instanceId, Set<String> rolesAllowed) {
+  bool _isAuthorized(String instanceId, List<String> rolesAllowed) {
     final realmRoles = _keycloakService.getRealmRoles(id: instanceId).toSet();
     final resourceRoles =
         _keycloakService.getResourceRoles(id: instanceId).toSet();

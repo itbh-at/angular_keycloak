@@ -110,7 +110,6 @@ class KeycloakService {
     assert(_instances.isNotEmpty,
         'Trying to get Keycloak instance of $id but none has registered yet');
     if (id == null) {
-      //TODO: We want to ensure the first created instnace is the one being return
       return _instances.values.first;
     }
 
