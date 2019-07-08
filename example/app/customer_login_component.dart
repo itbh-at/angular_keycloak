@@ -1,3 +1,5 @@
+import 'dart:html' show window;
+
 import 'package:angular/angular.dart';
 import 'package:angular_components/material_button/material_button.dart';
 import 'package:angular_keycloak/keycloak_service.dart';
@@ -15,14 +17,20 @@ import 'route_paths.dart';
   ''')
 class CustomerLoginComponent implements OnActivate {
   final KeycloakService _keycloakService;
+  final LocationStrategy _locationStrategy;
 
-  CustomerLoginComponent(this._keycloakService);
+  CustomerLoginComponent(this._keycloakService, this._locationStrategy);
 
   @override
   void onActivate(RouterState previous, RouterState current) {}
 
-  void login() {
-    _keycloakService.login(
-        id: 'customer', redirectUri: RoutePaths.customer.toUrl());
+  void login() async {
+    final keycloakInstanceId = 'customer';
+    if (!_keycloakService.isInstanceInitiated(instanceId: keycloakInstanceId)) {
+      await _keycloakService.initInstance(instanceId: keycloakInstanceId);
+    }
+    final url =
+        '${window.location.origin}/${_locationStrategy.prepareExternalUrl(RoutePaths.customer.toUrl())}';
+    _keycloakService.login(id: keycloakInstanceId, redirectUri: url);
   }
 }

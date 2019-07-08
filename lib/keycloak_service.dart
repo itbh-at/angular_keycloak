@@ -1,5 +1,4 @@
 import 'package:angular/angular.dart';
-import 'package:angular_router/angular_router.dart';
 import 'package:keycloak/keycloak.dart';
 
 enum InitLoadType { standard, loginRequired, checkSSO }
@@ -9,7 +8,7 @@ enum InitFlowType { standart, implicit, hybrid }
 class KeycloackServiceInstanceConfig {
   String id;
   String configFilePath;
-  RoutePath redirectRoutePath;
+  String redirectUri;
   InitLoadType loadType = InitLoadType.standard;
   InitFlowType flowType = InitFlowType.standart;
 }
@@ -20,10 +19,9 @@ class KeycloackServiceConfig {
 
 class KeycloakService {
   final KeycloackServiceConfig _config;
-  final Location _location;
   final _instances = <String, KeycloakInstance>{};
 
-  KeycloakService(@Optional() this._config, @Optional() this._location);
+  KeycloakService(@Optional() this._config);
 
   bool isInstanceInitiated({String instanceId}) => instanceId == null
       ? _instances.isNotEmpty
@@ -80,10 +78,8 @@ class KeycloakService {
         break;
     }
 
-    if (config.redirectRoutePath != null) {
-      //TODO: actual way to get full redirection path
-      initOption.redirectUri =
-          'http://localhost:2700/${_location.prepareExternalUrl(config.redirectRoutePath.toUrl())}';
+    if (config.redirectUri != null) {
+      initOption.redirectUri = config.redirectUri;
     }
 
     await instance.init(initOption);
@@ -91,10 +87,7 @@ class KeycloakService {
   }
 
   void login({String id, String redirectUri}) {
-    var realUrl =
-        'http://localhost:2700/${_location.prepareExternalUrl(redirectUri)}';
-    print('login redirecting to $realUrl');
-    _getInstance(id).login(KeycloakLoginOptions()..redirectUri = realUrl);
+    _getInstance(id).login(KeycloakLoginOptions()..redirectUri = redirectUri);
   }
 
   void logout({String id}) {
