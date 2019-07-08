@@ -29,8 +29,7 @@ SecuredRouterHookConfig hookSettingFactory() => SecuredRouterHookConfig()
   ..settings.add(SecuredRoute.authorization(
       keycloakInstanceId: 'customer',
       paths: [customer_paths.RoutePaths.vip],
-      authorizedRoles: ['vip'],
-      redirectPath: main_paths.RoutePaths.public))
+      authorizedRoles: ['vip']))
   ..settings.add(SecuredRoute.authentication(
       keycloakInstanceId: 'employee',
       paths: [main_paths.RoutePaths.employee],
@@ -39,9 +38,9 @@ SecuredRouterHookConfig hookSettingFactory() => SecuredRouterHookConfig()
       keycloakInstanceId: 'employee',
       paths: [employee_paths.RoutePaths.cashier],
       authorizedRoles: ['staff', 'supervisor'],
-      redirectPath: main_paths.RoutePaths.public))
+      redirectPath: main_paths.RoutePaths.unauthorized))
   ..settings.add(SecuredRoute.authorization(
       keycloakInstanceId: 'employee',
       paths: [employee_paths.RoutePaths.bossRoom],
       authorizedRoles: ['boss'],
-      redirectPath: main_paths.RoutePaths.public));
+      redirectPath: main_paths.RoutePaths.unauthorized));

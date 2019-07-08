@@ -6,4 +6,5 @@ class RoutePaths {
   static final employee = RoutePath(path: 'employee');
   static final customerLogin = RoutePath(path: 'customer-login');
   static final employeeLogin = RoutePath(path: 'employee-login');
+  static final unauthorized = RoutePath(path: 'unauthorized');
 }

@@ -5,6 +5,7 @@ import 'employee/employee_component.template.dart' as employee_template;
 import 'public/public_component.template.dart' as public_template;
 import 'customer_login_component.template.dart' as customer_login_template;
 import 'employee_login_component.template.dart' as employee_login_template;
+import 'unauthorized_component.template.dart' as unauthorized_template;
 
 import 'route_paths.dart';
 export 'route_paths.dart';
@@ -30,5 +31,16 @@ class Routes {
       routePath: RoutePaths.public,
       component: public_template.PublicComponentNgFactory);
 
-  static final all = [customer, customerLogin, employee, employeeLogin, public];
+  static final unauthorized = RouteDefinition(
+      routePath: RoutePaths.unauthorized,
+      component: unauthorized_template.UnauthorizedComponentNgFactory);
+
+  static final all = [
+    customer,
+    customerLogin,
+    employee,
+    employeeLogin,
+    public,
+    unauthorized
+  ];
 }
