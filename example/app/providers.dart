@@ -12,18 +12,18 @@ import 'employee/route_paths.dart' as employee_paths;
 KeycloackServiceConfig keycloakConfigFactory(
         LocationStrategy _locationStrategy) =>
     KeycloackServiceConfig()
-      ..instanceConfigs.add(KeycloackServiceInstanceConfig()
-        ..id = 'employee'
-        ..configFilePath = 'employee.json'
-        ..redirectUri =
-            '${window.location.origin}/${_locationStrategy.prepareExternalUrl(main_paths.RoutePaths.employee.toUrl())}'
-        ..loadType = InitLoadType.checkSSO)
-      ..instanceConfigs.add(KeycloackServiceInstanceConfig()
-        ..id = 'customer'
-        ..configFilePath = 'customer.json'
-        ..redirectUri =
-            '${window.location.origin}/${_locationStrategy.prepareExternalUrl(main_paths.RoutePaths.customer.toUrl())}'
-        ..loadType = InitLoadType.checkSSO);
+      ..instanceConfigs.add(KeycloackServiceInstanceConfig(
+          id: 'employee',
+          configFilePath: 'employee.json',
+          redirectUri:
+              '${window.location.origin}/${_locationStrategy.prepareExternalUrl(main_paths.RoutePaths.employee.toUrl())}',
+          loadType: InitLoadType.checkSSO))
+      ..instanceConfigs.add(KeycloackServiceInstanceConfig(
+          id: 'customer',
+          configFilePath: 'customer.json',
+          redirectUri:
+              '${window.location.origin}/${_locationStrategy.prepareExternalUrl(main_paths.RoutePaths.customer.toUrl())}',
+          loadType: InitLoadType.checkSSO));
 
 SecuredRouterHookConfig hookSettingFactory() => SecuredRouterHookConfig()
   ..settings.add(SecuredRoute.authentication(

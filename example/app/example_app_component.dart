@@ -1,6 +1,5 @@
 import 'package:angular/angular.dart';
-import 'package:angular_router/angular_router.dart'
-    show Router, routerDirectives;
+import 'package:angular_router/angular_router.dart' show routerDirectives;
 import 'package:angular_components/laminate/popup/module.dart';
 
 import 'package:angular_keycloak/keycloak_service.dart';
@@ -31,6 +30,6 @@ class ExampleAppComponent {
   ExampleAppComponent(this._keycloakService);
 
   void logoutCustomer() async {
-    _keycloakService.logout(id: 'customer');
+    _keycloakService.logout(instanceId: 'customer');
   }
 }

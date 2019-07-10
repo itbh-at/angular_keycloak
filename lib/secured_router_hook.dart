@@ -164,7 +164,7 @@ class SecuredRouterHook implements RouterHook {
           redirectedOriginUrl =
               '${window.location.origin}/${_locationStrategy.prepareExternalUrl(redirectedOriginPath)}';
         }
-        await _keycloakService.initInstance(
+        await _keycloakService.initWithId(
             instanceId: instanceId, redirectedOrigin: redirectedOriginUrl);
       } catch (e) {
         print('Error when initiating keycloak instance of $instanceId. $e');
@@ -175,13 +175,14 @@ class SecuredRouterHook implements RouterHook {
   }
 
   bool _isAuthenticated(String instanceId) {
-    return _keycloakService.isAuthenticated(id: instanceId);
+    return _keycloakService.isAuthenticated(instanceId: instanceId);
   }
 
   bool _isAuthorized(String instanceId, List<String> rolesAllowed) {
-    final realmRoles = _keycloakService.getRealmRoles(id: instanceId).toSet();
+    final realmRoles =
+        _keycloakService.getRealmRoles(instanceId: instanceId).toSet();
     final resourceRoles =
-        _keycloakService.getResourceRoles(id: instanceId).toSet();
+        _keycloakService.getResourceRoles(instanceId: instanceId).toSet();
     final combinedRoles = realmRoles.union(resourceRoles);
 
     return combinedRoles.containsAll(rolesAllowed);

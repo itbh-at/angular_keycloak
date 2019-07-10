@@ -3,14 +3,21 @@ import 'package:keycloak/keycloak.dart';
 
 enum InitLoadType { standard, loginRequired, checkSSO }
 
-enum InitFlowType { standart, implicit, hybrid }
+enum InitFlowType { standard, implicit, hybrid }
 
 class KeycloackServiceInstanceConfig {
-  String id;
-  String configFilePath;
-  String redirectUri;
-  InitLoadType loadType = InitLoadType.standard;
-  InitFlowType flowType = InitFlowType.standart;
+  final String id;
+  final String configFilePath;
+  final String redirectUri;
+  final InitLoadType loadType;
+  final InitFlowType flowType;
+
+  const KeycloackServiceInstanceConfig(
+      {this.id,
+      this.configFilePath,
+      this.redirectUri,
+      this.loadType = InitLoadType.standard,
+      this.flowType = InitFlowType.standard});
 }
 
 class KeycloackServiceConfig {
@@ -27,29 +34,32 @@ class KeycloakService {
       ? _instances.isNotEmpty
       : _instances.containsKey(instanceId);
 
-  bool isAuthenticated({String id}) => _getInstance(id).authenticated;
+  bool isAuthenticated({String instanceId}) =>
+      getInstance(instanceId).authenticated;
 
-  List<String> getRealmRoles({String id}) => _getInstance(id).realmAccess.roles;
+  List<String> getRealmRoles({String instanceId}) =>
+      getInstance(instanceId).realmAccess.roles;
 
-  List<String> getResourceRoles({String id, String clientId}) {
-    clientId = clientId ?? _getInstance(id).clientId;
-    return _getInstance(id).resourceAccess[clientId].roles;
+  List<String> getResourceRoles({String instanceId, String clientId}) {
+    clientId = clientId ?? getInstance(instanceId).clientId;
+    return getInstance(instanceId).resourceAccess[clientId].roles;
   }
 
-  Future initInstance({String instanceId, String redirectedOrigin}) async {
+  Future initWithId({String instanceId, String redirectedOrigin}) async {
     if (_config == null) {
       throw Exception(
-          'Must have KeycloackServiceConfig defined to use initInstance');
+          'Must have KeycloackServiceConfig defined to use initWithId');
     }
 
     final instanceConfig =
         _config.instanceConfigs.firstWhere((config) => config.id == instanceId);
-    return registerInstance(instanceConfig, redirectedOrigin);
+    return init(instanceConfig, redirectedOrigin);
   }
 
-  //TODO: Map init?
-  Future<String> registerInstance(KeycloackServiceInstanceConfig config,
-      [String redirectedOrigin]) async {
+  Future<String> init(
+      [KeycloackServiceInstanceConfig config =
+          const KeycloackServiceInstanceConfig(),
+      String redirectedOrigin]) async {
     // Create the instance and store it by id
     final instance = KeycloakInstance(config.configFilePath);
     final chosenId = config.id ?? instance.hashCode.toString();
@@ -89,20 +99,26 @@ class KeycloakService {
     return chosenId;
   }
 
-  void login({String id, String redirectUri}) {
-    _getInstance(id).login(KeycloakLoginOptions()..redirectUri = redirectUri);
+  void login({String instanceId, String redirectUri}) {
+    getInstance(instanceId)
+        .login(KeycloakLoginOptions()..redirectUri = redirectUri);
   }
 
-  void logout({String id}) {
-    _getInstance(id).logout();
+  void logout({String instanceId}) {
+    getInstance(instanceId).logout();
   }
 
-  Future<String> getUserName({String id}) async {
-    final profile = await _getInstance(id).loadUserProfile();
-    return profile.username;
+  Future<bool> refreshToken({String instanceId, num minValidity = 30}) async {
+    return getInstance(instanceId).updateToken(minValidity);
   }
 
-  KeycloakInstance _getInstance([String id]) {
+  Future<KeycloakProfile> getUserProfile({String instanceId}) async {
+    await refreshToken(instanceId: instanceId, minValidity: 55);
+    final profile = await getInstance(instanceId).loadUserProfile();
+    return profile;
+  }
+
+  KeycloakInstance getInstance([String id]) {
     assert(_instances.isNotEmpty,
         'Trying to get Keycloak instance of $id but none has registered yet');
     if (id == null) {

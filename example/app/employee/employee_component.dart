@@ -32,10 +32,10 @@ class EmployeeComponent implements OnActivate {
   EmployeeComponent(this._keycloakService);
 
   void onActivate(RouterState previous, RouterState current) async {
-    name = await _keycloakService.getUserName();
+    name = (await _keycloakService.getUserProfile()).username;
   }
 
   void logout() async {
-    _keycloakService.logout(id: 'employee');
+    _keycloakService.logout(instanceId: 'employee');
   }
 }

@@ -34,10 +34,10 @@ class EmployeeLoginComponent implements OnActivate {
   void login() async {
     final keycloakInstanceId = 'employee';
     if (!_keycloakService.isInstanceInitiated(instanceId: keycloakInstanceId)) {
-      await _keycloakService.initInstance(instanceId: keycloakInstanceId);
+      await _keycloakService.initWithId(instanceId: keycloakInstanceId);
     }
     final url =
         '${window.location.origin}/${_locationStrategy.prepareExternalUrl(_originUri)}';
-    _keycloakService.login(id: keycloakInstanceId, redirectUri: url);
+    _keycloakService.login(instanceId: keycloakInstanceId, redirectUri: url);
   }
 }
