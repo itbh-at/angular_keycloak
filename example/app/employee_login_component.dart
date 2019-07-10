@@ -19,10 +19,17 @@ class EmployeeLoginComponent implements OnActivate {
   final KeycloakService _keycloakService;
   final LocationStrategy _locationStrategy;
 
+  var _originUri = RoutePaths.employee.toUrl();
+
   EmployeeLoginComponent(this._keycloakService, this._locationStrategy);
 
   @override
-  void onActivate(RouterState previous, RouterState current) {}
+  void onActivate(_, RouterState current) {
+    final origin = current.queryParameters['origin'];
+    if (origin != null) {
+      _originUri = origin;
+    }
+  }
 
   void login() async {
     final keycloakInstanceId = 'employee';
@@ -30,7 +37,7 @@ class EmployeeLoginComponent implements OnActivate {
       await _keycloakService.initInstance(instanceId: keycloakInstanceId);
     }
     final url =
-        '${window.location.origin}/${_locationStrategy.prepareExternalUrl(RoutePaths.employee.toUrl())}';
+        '${window.location.origin}/${_locationStrategy.prepareExternalUrl(_originUri)}';
     _keycloakService.login(id: keycloakInstanceId, redirectUri: url);
   }
 }

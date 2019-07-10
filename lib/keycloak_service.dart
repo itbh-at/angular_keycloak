@@ -1,4 +1,4 @@
-import 'package:angular/angular.dart';
+import 'package:angular/angular.dart' show Optional;
 import 'package:keycloak/keycloak.dart';
 
 enum InitLoadType { standard, loginRequired, checkSSO }
@@ -36,7 +36,7 @@ class KeycloakService {
     return _getInstance(id).resourceAccess[clientId].roles;
   }
 
-  Future initInstance({String instanceId}) async {
+  Future initInstance({String instanceId, String redirectedOrigin}) async {
     if (_config == null) {
       throw Exception(
           'Must have KeycloackServiceConfig defined to use initInstance');
@@ -44,11 +44,12 @@ class KeycloakService {
 
     final instanceConfig =
         _config.instanceConfigs.firstWhere((config) => config.id == instanceId);
-    return registerInstance(instanceConfig);
+    return registerInstance(instanceConfig, redirectedOrigin);
   }
 
   //TODO: Map init?
-  Future<String> registerInstance(KeycloackServiceInstanceConfig config) async {
+  Future<String> registerInstance(KeycloackServiceInstanceConfig config,
+      [String redirectedOrigin]) async {
     // Create the instance and store it by id
     final instance = KeycloakInstance(config.configFilePath);
     final chosenId = config.id ?? instance.hashCode.toString();
@@ -78,7 +79,9 @@ class KeycloakService {
         break;
     }
 
-    if (config.redirectUri != null) {
+    if (redirectedOrigin != null) {
+      initOption.redirectUri = redirectedOrigin;
+    } else if (config.redirectUri != null) {
       initOption.redirectUri = config.redirectUri;
     }
 

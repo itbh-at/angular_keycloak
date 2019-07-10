@@ -19,10 +19,17 @@ class CustomerLoginComponent implements OnActivate {
   final KeycloakService _keycloakService;
   final LocationStrategy _locationStrategy;
 
+  var _originUri = RoutePaths.customer.toUrl();
+
   CustomerLoginComponent(this._keycloakService, this._locationStrategy);
 
   @override
-  void onActivate(RouterState previous, RouterState current) {}
+  void onActivate(_, RouterState current) {
+    final origin = current.queryParameters['origin'];
+    if (origin != null) {
+      _originUri = origin;
+    }
+  }
 
   void login() async {
     final keycloakInstanceId = 'customer';
@@ -30,7 +37,7 @@ class CustomerLoginComponent implements OnActivate {
       await _keycloakService.initInstance(instanceId: keycloakInstanceId);
     }
     final url =
-        '${window.location.origin}/${_locationStrategy.prepareExternalUrl(RoutePaths.customer.toUrl())}';
+        '${window.location.origin}/${_locationStrategy.prepareExternalUrl(_originUri)}';
     _keycloakService.login(id: keycloakInstanceId, redirectUri: url);
   }
 }

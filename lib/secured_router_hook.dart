@@ -1,3 +1,4 @@
+import 'dart:html' show window;
 import 'dart:async' show FutureOr;
 
 import 'package:angular/di.dart';
@@ -35,6 +36,8 @@ class SecuredRouterHook implements RouterHook {
   final _redirectingSetting = <SecuredRoute>[];
   final _blockingSetting = <SecuredRoute>[];
 
+  final _directedAwayOrigins = <String, String>{};
+
   SecuredRouterHook(
       this._keycloakService, this._locationStrategy, this._setting) {
     for (final setting in _setting.settings) {
@@ -58,9 +61,11 @@ class SecuredRouterHook implements RouterHook {
         final securedPath = securingPath.toUrl();
         if (_match(path, securedPath)) {
           if (await _verifyOrInitiateKeycloakInstance(
-              setting.keycloakInstanceId)) {
+              setting.keycloakInstanceId, path)) {
             if (!_isAuthenticated(setting.keycloakInstanceId)) {
-              return setting.redirectPath.toUrl();
+              final redirectedPathUrl = setting.redirectPath.toUrl();
+              _directedAwayOrigins[redirectedPathUrl] = path;
+              return redirectedPathUrl;
             } else if (!setting.authenticatingSetting &&
                 !_isAuthorized(
                     setting.keycloakInstanceId, setting.authorizedRoles)) {
@@ -75,7 +80,20 @@ class SecuredRouterHook implements RouterHook {
 
   Future<NavigationParams> navigationParams(
       String path, NavigationParams params) async {
-    // Provided as a default if someone extends or mixes-in this interface.
+    if (_directedAwayOrigins.isNotEmpty) {
+      final origin = _directedAwayOrigins[path];
+      _directedAwayOrigins.clear();
+
+      if (origin != null) {
+        final newParams = NavigationParams(
+            queryParameters: {'origin': origin},
+            fragment: params.fragment,
+            reload: params.reload,
+            replace: params.replace,
+            updateUrl: params.updateUrl);
+        return newParams;
+      }
+    }
     return params;
   }
 
@@ -137,10 +155,17 @@ class SecuredRouterHook implements RouterHook {
     }
   }
 
-  FutureOr _verifyOrInitiateKeycloakInstance(String instanceId) async {
+  FutureOr _verifyOrInitiateKeycloakInstance(String instanceId,
+      [String redirectedOriginPath]) async {
     if (!_keycloakService.isInstanceInitiated(instanceId: instanceId)) {
       try {
-        await _keycloakService.initInstance(instanceId: instanceId);
+        String redirectedOriginUrl;
+        if (redirectedOriginPath != null) {
+          redirectedOriginUrl =
+              '${window.location.origin}/${_locationStrategy.prepareExternalUrl(redirectedOriginPath)}';
+        }
+        await _keycloakService.initInstance(
+            instanceId: instanceId, redirectedOrigin: redirectedOriginUrl);
       } catch (e) {
         print('Error when initiating keycloak instance of $instanceId. $e');
         return false;
