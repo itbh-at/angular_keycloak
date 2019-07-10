@@ -1,5 +1,5 @@
 {
-  "realm": "restaurant-member",
+  "realm": "angulardart-demo-member",
   "auth-server-url": "http://localhost:8080/auth",
   "ssl-required": "external",
   "resource": "customer",
