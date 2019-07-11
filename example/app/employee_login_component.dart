@@ -34,7 +34,8 @@ class EmployeeLoginComponent implements OnActivate {
   void login() async {
     final keycloakInstanceId = 'employee';
     if (!_keycloakService.isInstanceInitiated(instanceId: keycloakInstanceId)) {
-      await _keycloakService.initWithId(instanceId: keycloakInstanceId);
+      await _keycloakService.initWithProvidedConfig(
+          instanceId: keycloakInstanceId);
     }
     final url =
         '${window.location.origin}/${_locationStrategy.prepareExternalUrl(_originUri)}';

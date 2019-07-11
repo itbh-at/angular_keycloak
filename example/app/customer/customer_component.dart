@@ -43,7 +43,8 @@ class CustomerComponent implements OnActivate {
   CustomerComponent(this._keycloakService, this._router);
 
   void onActivate(RouterState previous, RouterState current) async {
-    name = (await _keycloakService.getUserProfile()).username;
+    name = (await _keycloakService.getUserProfile(instanceId: 'customer'))
+        .username;
   }
 
   void goToVIP() async {

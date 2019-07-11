@@ -34,7 +34,8 @@ class CustomerLoginComponent implements OnActivate {
   void login() async {
     final keycloakInstanceId = 'customer';
     if (!_keycloakService.isInstanceInitiated(instanceId: keycloakInstanceId)) {
-      await _keycloakService.initWithId(instanceId: keycloakInstanceId);
+      await _keycloakService.initWithProvidedConfig(
+          instanceId: keycloakInstanceId);
     }
     final url =
         '${window.location.origin}/${_locationStrategy.prepareExternalUrl(_originUri)}';

@@ -146,7 +146,7 @@ class SecuredRouterHook implements RouterHook {
           redirectedOriginUrl =
               '${window.location.origin}/${_locationStrategy.prepareExternalUrl(redirectedOriginPath)}';
         }
-        await _keycloakService.initWithId(
+        await _keycloakService.initWithProvidedConfig(
             instanceId: instanceId, redirectedOrigin: redirectedOriginUrl);
       } catch (e) {
         print('Error when initiating keycloak instance of $instanceId. $e');

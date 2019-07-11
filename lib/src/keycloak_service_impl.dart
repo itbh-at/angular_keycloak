@@ -6,47 +6,53 @@ import 'keycloak_service_config.dart';
 export 'keycloak_service_config.dart';
 
 class KeycloakService {
-  final KeycloackServiceConfig _config;
-  final _instances = <String, KeycloakInstance>{};
+  final _config = Map<String, KeycloackServiceInstanceConfig>();
 
-  KeycloakService(@Optional() this._config);
+  KeycloakInstance _initiatedInstance;
+  String _initiatedInstanceId;
+  bool _autoUpdateToken = false;
+  int _autoUpdateMinValidity = 30;
 
-  bool isInstanceInitiated({String instanceId}) => instanceId == null
-      ? _instances.isNotEmpty
-      : _instances.containsKey(instanceId);
-
-  bool isAuthenticated({String instanceId}) =>
-      getInstance(instanceId).authenticated;
-
-  List<String> getRealmRoles({String instanceId}) =>
-      getInstance(instanceId).realmAccess.roles;
-
-  List<String> getResourceRoles({String instanceId, String clientId}) {
-    clientId = clientId ?? getInstance(instanceId).clientId;
-    return getInstance(instanceId).resourceAccess[clientId].roles;
+  KeycloakService(@Optional() KeycloackServiceConfig config) {
+    if (config != null) {
+      _config.addEntries(config.instanceConfigs.map(
+          (instanceConfig) => MapEntry(instanceConfig.id, instanceConfig)));
+    }
   }
 
-  Future initWithId({String instanceId, String redirectedOrigin}) async {
+  bool isInstanceInitiated({String instanceId}) {
+    if (_initiatedInstance == null) {
+      return false;
+    } else if (instanceId != null && instanceId != _initiatedInstanceId) {
+      return false;
+    }
+    return true;
+  }
+
+  void _verifyInitialization(String instanceId) {
+    if (!isInstanceInitiated(instanceId: instanceId)) {
+      throw Exception('Keycloak instance $instanceId is not initiated.');
+    }
+  }
+
+  Future initWithProvidedConfig(
+      {String instanceId, String redirectedOrigin}) async {
     if (_config == null) {
       throw Exception(
           'Must have KeycloackServiceConfig defined to use initWithId');
     }
+    if (!_config.containsKey(instanceId)) {
+      throw Exception(
+          'Must have $instanceId KeycloakServiceInstanceConfig defined to use initWithId');
+    }
 
-    final instanceConfig =
-        _config.instanceConfigs.firstWhere((config) => config.id == instanceId);
-    return init(instanceConfig, redirectedOrigin);
+    return init(_config[instanceId], redirectedOrigin);
   }
 
   Future<String> init(
       [KeycloackServiceInstanceConfig config =
           const KeycloackServiceInstanceConfig(),
       String redirectedOrigin]) async {
-    // Create the instance and store it by id
-    final instance = KeycloakInstance(config.configFilePath);
-    final chosenId = config.id ?? instance.hashCode.toString();
-    _instances[chosenId] = instance;
-
-    // Initialize the instance
     final initOption = KeycloakInitOptions();
     switch (config.loadType) {
       case InitLoadType.loginRequired:
@@ -76,43 +82,73 @@ class KeycloakService {
       initOption.redirectUri = config.redirectUri;
     }
 
+    final instance = KeycloakInstance(config.configFilePath);
     await instance.init(initOption);
-    return chosenId;
+
+    _initiatedInstance = instance;
+    _initiatedInstanceId = config.id ?? _initiatedInstance.hashCode.toString();
+    _autoUpdateToken =
+        config.autoUpdate && config.flowType != InitFlowType.implicit;
+    _autoUpdateMinValidity = config.autoUpdateMinValidity;
+
+    return _initiatedInstanceId;
   }
 
-  void login({String instanceId, String redirectUri}) {
-    getInstance(instanceId)
-        .login(KeycloakLoginOptions()..redirectUri = redirectUri);
+  bool isAuthenticated({String instanceId}) {
+    _verifyInitialization(instanceId);
+    return _initiatedInstance.authenticated;
   }
 
-  void logout({String instanceId}) {
-    getInstance(instanceId).logout();
+  List<String> getRealmRoles({String instanceId}) {
+    _verifyInitialization(instanceId);
+    return _initiatedInstance.realmAccess.roles;
   }
 
-  Future<bool> refreshToken({String instanceId, num minValidity = 30}) async {
-    return getInstance(instanceId).updateToken(minValidity);
+  List<String> getResourceRoles({String instanceId, String clientId}) {
+    _verifyInitialization(instanceId);
+
+    clientId = clientId ?? _initiatedInstance.clientId;
+    return _initiatedInstance.resourceAccess[clientId].roles;
   }
 
   Future<KeycloakProfile> getUserProfile({String instanceId}) async {
-    await refreshToken(instanceId: instanceId, minValidity: 55);
-    final profile = await getInstance(instanceId).loadUserProfile();
+    _verifyInitialization(instanceId);
+
+    if (_autoUpdateToken) {
+      await _initiatedInstance.updateToken(_autoUpdateMinValidity);
+    }
+
+    final profile = await _initiatedInstance.loadUserProfile();
     return profile;
   }
 
   Future<String> getToken({String instanceId}) async {
-    await refreshToken(instanceId: instanceId, minValidity: 55);
-    return getInstance(instanceId).token;
-  }
+    _verifyInitialization(instanceId);
 
-  KeycloakInstance getInstance([String id]) {
-    assert(_instances.isNotEmpty,
-        'Trying to get Keycloak instance of $id but none has registered yet');
-    if (id == null) {
-      return _instances.values.first;
+    if (_autoUpdateToken) {
+      await _initiatedInstance.updateToken(_autoUpdateMinValidity);
     }
 
-    assert(_instances.containsKey(id),
-        'Trying to get Keycloak instance of $id but it is not registered with service');
-    return _instances[id];
+    return _initiatedInstance.token;
+  }
+
+  void login({String instanceId, String redirectUri}) {
+    _verifyInitialization(instanceId);
+    _initiatedInstance.login(KeycloakLoginOptions()..redirectUri = redirectUri);
+  }
+
+  void logout({String instanceId}) {
+    _verifyInitialization(instanceId);
+    _initiatedInstance.logout();
+  }
+
+  Future<bool> refreshToken({String instanceId, num minValidity = 30}) async {
+    _verifyInitialization(instanceId);
+    return _initiatedInstance.updateToken(minValidity);
+  }
+
+  KeycloakInstance getInstance([String instanceId]) {
+    _verifyInitialization(instanceId);
+    return _initiatedInstance;
   }
 }
