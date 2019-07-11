@@ -10,7 +10,7 @@ import 'main.template.dart' as self;
 
 @GenerateInjector([
   FactoryProvider(KeycloackServiceConfig, keycloakConfigFactory),
-  FactoryProvider(SecuredRouterHookConfig, hookSettingFactory),
+  FactoryProvider(SecuredRouterHookConfig, securedRouterHookConfigFactory),
   ClassProvider(KeycloakService),
   ClassProvider(RouterHook, useClass: SecuredRouterHook),
   routerProvidersHash, // You can use routerProviders in production
