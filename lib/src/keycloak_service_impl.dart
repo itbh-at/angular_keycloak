@@ -1,11 +1,11 @@
-import 'package:angular/angular.dart' show Optional;
+import 'package:angular/angular.dart' show Injectable, Optional;
 import 'package:keycloak/keycloak.dart';
 
+import 'keycloak_service.dart';
 import 'keycloak_service_config.dart';
 
-export 'keycloak_service_config.dart';
-
-class KeycloakService {
+@Injectable()
+class KeycloakServiceImpl extends KeycloakService {
   final _config = Map<String, KeycloackServiceInstanceConfig>();
 
   KeycloakInstance _initiatedInstance;
@@ -13,13 +13,14 @@ class KeycloakService {
   bool _autoUpdateToken = false;
   int _autoUpdateMinValidity = 30;
 
-  KeycloakService(@Optional() KeycloackServiceConfig config) {
+  KeycloakServiceImpl(@Optional() KeycloackServiceConfig config) {
     if (config != null) {
       _config.addEntries(config.instanceConfigs.map(
           (instanceConfig) => MapEntry(instanceConfig.id, instanceConfig)));
     }
   }
 
+  @override
   bool isInstanceInitiated({String instanceId}) {
     if (_initiatedInstance == null) {
       return false;
@@ -35,6 +36,7 @@ class KeycloakService {
     }
   }
 
+  @override
   Future initWithProvidedConfig(
       {String instanceId, String redirectedOrigin}) async {
     if (_config == null) {
@@ -49,6 +51,7 @@ class KeycloakService {
     return init(_config[instanceId], redirectedOrigin);
   }
 
+  @override
   Future<String> init(
       [KeycloackServiceInstanceConfig config =
           const KeycloackServiceInstanceConfig(),
@@ -94,16 +97,19 @@ class KeycloakService {
     return _initiatedInstanceId;
   }
 
+  @override
   bool isAuthenticated({String instanceId}) {
     _verifyInitialization(instanceId);
     return _initiatedInstance.authenticated;
   }
 
+  @override
   List<String> getRealmRoles({String instanceId}) {
     _verifyInitialization(instanceId);
     return _initiatedInstance.realmAccess.roles;
   }
 
+  @override
   List<String> getResourceRoles({String instanceId, String clientId}) {
     _verifyInitialization(instanceId);
 
@@ -111,6 +117,7 @@ class KeycloakService {
     return _initiatedInstance.resourceAccess[clientId].roles;
   }
 
+  @override
   Future<KeycloakProfile> getUserProfile({String instanceId}) async {
     _verifyInitialization(instanceId);
 
@@ -122,6 +129,7 @@ class KeycloakService {
     return profile;
   }
 
+  @override
   Future<String> getToken({String instanceId}) async {
     _verifyInitialization(instanceId);
 
@@ -132,21 +140,25 @@ class KeycloakService {
     return _initiatedInstance.token;
   }
 
+  @override
   void login({String instanceId, String redirectUri}) {
     _verifyInitialization(instanceId);
     _initiatedInstance.login(KeycloakLoginOptions()..redirectUri = redirectUri);
   }
 
+  @override
   void logout({String instanceId}) {
     _verifyInitialization(instanceId);
     _initiatedInstance.logout();
   }
 
+  @override
   Future<bool> refreshToken({String instanceId, num minValidity = 30}) async {
     _verifyInitialization(instanceId);
     return _initiatedInstance.updateToken(minValidity);
   }
 
+  @override
   KeycloakInstance getInstance([String instanceId]) {
     _verifyInitialization(instanceId);
     return _initiatedInstance;

@@ -2,8 +2,7 @@ import 'dart:html' show window;
 
 import 'package:angular_router/angular_router.dart';
 
-import 'package:angular_keycloak/keycloak_service.dart';
-import 'package:angular_keycloak/secured_router_hook.dart';
+import 'package:angular_keycloak/angular_keycloak.dart';
 
 import 'route_paths.dart' as main_paths;
 import 'customer/route_paths.dart' as customer_paths;

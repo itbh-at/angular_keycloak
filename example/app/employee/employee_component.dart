@@ -2,7 +2,7 @@ import 'package:angular/angular.dart';
 import 'package:angular_components/material_button/material_button.dart';
 import 'package:angular_router/angular_router.dart';
 
-import 'package:angular_keycloak/keycloak_service.dart';
+import 'package:angular_keycloak/angular_keycloak.dart';
 
 import 'routes.dart';
 

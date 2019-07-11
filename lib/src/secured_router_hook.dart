@@ -4,10 +4,8 @@ import 'dart:async' show FutureOr;
 import 'package:angular/di.dart' show Injectable;
 import 'package:angular_router/angular_router.dart';
 
-import 'keycloak_service_impl.dart';
-import 'secured_route.dart';
-
-export 'secured_route.dart';
+import 'keycloak_service.dart';
+import 'secured_router_hook_config.dart';
 
 @Injectable()
 class SecuredRouterHook implements RouterHook {
