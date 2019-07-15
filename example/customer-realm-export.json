@@ -1,5 +1,5 @@
 {
-  "id": "restaurant-member",
+  "id": "angulardart-demo-member",
   "realm": "angulardart-demo-member",
   "notBefore": 0,
   "revokeRefreshToken": false,
@@ -102,9 +102,7 @@
           "composite": true,
           "composites": {
             "client": {
-              "realm-management": [
-                "query-clients"
-              ]
+              "realm-management": ["query-clients"]
             }
           },
           "clientRole": true,
@@ -190,10 +188,7 @@
           "composite": true,
           "composites": {
             "client": {
-              "realm-management": [
-                "query-groups",
-                "query-users"
-              ]
+              "realm-management": ["query-groups", "query-users"]
             }
           },
           "clientRole": true,
@@ -309,9 +304,7 @@
           "composite": true,
           "composites": {
             "client": {
-              "account": [
-                "manage-account-links"
-              ]
+              "account": ["manage-account-links"]
             }
           },
           "clientRole": true,
@@ -326,9 +319,7 @@
           "composite": true,
           "composites": {
             "client": {
-              "customer": [
-                "member"
-              ]
+              "customer": ["member"]
             }
           },
           "clientRole": true,
@@ -347,29 +338,19 @@
     }
   },
   "groups": [],
-  "defaultRoles": [
-    "uma_authorization",
-    "offline_access"
-  ],
-  "requiredCredentials": [
-    "password"
-  ],
+  "defaultRoles": ["uma_authorization", "offline_access"],
+  "requiredCredentials": ["password"],
   "otpPolicyType": "totp",
   "otpPolicyAlgorithm": "HmacSHA1",
   "otpPolicyInitialCounter": 0,
   "otpPolicyDigits": 6,
   "otpPolicyLookAheadWindow": 1,
   "otpPolicyPeriod": 30,
-  "otpSupportedApplications": [
-    "FreeOTP",
-    "Google Authenticator"
-  ],
+  "otpSupportedApplications": ["FreeOTP", "Google Authenticator"],
   "scopeMappings": [
     {
       "clientScope": "offline_access",
-      "roles": [
-        "offline_access"
-      ]
+      "roles": ["offline_access"]
     }
   ],
   "clients": [
@@ -458,9 +439,7 @@
       "enabled": true,
       "clientAuthenticatorType": "client-secret",
       "secret": "**********",
-      "redirectUris": [
-        "/auth/admin/angulardart-demo-member/console/*"
-      ],
+      "redirectUris": ["/auth/admin/angulardart-demo-member/console/*"],
       "webOrigins": [],
       "notBefore": 0,
       "bearerOnly": false,
@@ -552,12 +531,8 @@
       "enabled": true,
       "clientAuthenticatorType": "client-secret",
       "secret": "**********",
-      "redirectUris": [
-        "*"
-      ],
-      "webOrigins": [
-        "*"
-      ],
+      "redirectUris": ["*"],
+      "webOrigins": ["*"],
       "notBefore": 0,
       "bearerOnly": false,
       "consentRequired": false,
@@ -610,13 +585,8 @@
       "enabled": true,
       "clientAuthenticatorType": "client-secret",
       "secret": "**********",
-      "defaultRoles": [
-        "manage-account",
-        "view-profile"
-      ],
-      "redirectUris": [
-        "/auth/realms/angulardart-demo-member/account/*"
-      ],
+      "defaultRoles": ["manage-account", "view-profile"],
+      "redirectUris": ["/auth/realms/angulardart-demo-member/account/*"],
       "webOrigins": [],
       "notBefore": 0,
       "bearerOnly": false,
@@ -1156,9 +1126,7 @@
   },
   "smtpServer": {},
   "eventsEnabled": false,
-  "eventsListeners": [
-    "jboss-logging"
-  ],
+  "eventsListeners": ["jboss-logging"],
   "enabledEventTypes": [],
   "adminEventsEnabled": false,
   "adminEventsDetailsEnabled": false,
@@ -1171,9 +1139,7 @@
         "subType": "anonymous",
         "subComponents": {},
         "config": {
-          "max-clients": [
-            "200"
-          ]
+          "max-clients": ["200"]
         }
       },
       {
@@ -1183,9 +1149,7 @@
         "subType": "anonymous",
         "subComponents": {},
         "config": {
-          "allow-default-scopes": [
-            "true"
-          ]
+          "allow-default-scopes": ["true"]
         }
       },
       {
@@ -1249,12 +1213,8 @@
         "subType": "anonymous",
         "subComponents": {},
         "config": {
-          "host-sending-registration-request-must-match": [
-            "true"
-          ],
-          "client-uris-must-match": [
-            "true"
-          ]
+          "host-sending-registration-request-must-match": ["true"],
+          "client-uris-must-match": ["true"]
         }
       },
       {
@@ -1264,9 +1224,7 @@
         "subType": "authenticated",
         "subComponents": {},
         "config": {
-          "allow-default-scopes": [
-            "true"
-          ]
+          "allow-default-scopes": ["true"]
         }
       }
     ],
@@ -1277,9 +1235,7 @@
         "providerId": "rsa-generated",
         "subComponents": {},
         "config": {
-          "priority": [
-            "100"
-          ]
+          "priority": ["100"]
         }
       },
       {
@@ -1288,9 +1244,7 @@
         "providerId": "aes-generated",
         "subComponents": {},
         "config": {
-          "priority": [
-            "100"
-          ]
+          "priority": ["100"]
         }
       },
       {
@@ -1299,12 +1253,8 @@
         "providerId": "hmac-generated",
         "subComponents": {},
         "config": {
-          "priority": [
-            "100"
-          ],
-          "algorithm": [
-            "HS256"
-          ]
+          "priority": ["100"],
+          "algorithm": ["HS256"]
         }
       }
     ]
