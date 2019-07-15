@@ -23,11 +23,11 @@ Advance user still can acquire the base [KeycloakInstace][keycloak dart reposito
 
 When one Keycloak instance is all the application need. There is no need to pay attention to `instanceId` which most of the service's API accept. The service is smart enough to recognize there is only one instance and all call or verification will go through it.
 
-The usage of such use case can be study in [Example - Single Instance][example - single instance].
+The usage of such use case can be study in [Example: Service Only](#example-service-only).
 
 ### Multiple Instances
 
-`KeycloakService` supports multiple [KeycloakInstace][keycloak dart repository: keycloakinstance] configurations, but only one of them can be initialized at a time.
+`KeycloakService` supports multiple [KeycloakInstance][keycloak dart repository: keycloakinstance] configurations, but only one of them can be initialized at a time.
 
 These multiple instance can be identify by using the `instanceId` in most of the API. Passing in `instanceId` is still optional, the purpose of passing it in is just for verification. e.g. those API will throw an exception if the initialized instance does not match the id.
 
@@ -35,7 +35,7 @@ These multiple instance can be identify by using the `instanceId` in most of the
 
 It is recommended to inject `KeycloackServiceInstanceConfig` along with the `KeycloakService` for multiple instances configuration. These are injectable class that allow user to predefine the configuration of each instance, and identify them with the `instanceId`.
 
-The usage of such use case can be study in [Example - Multiple Instance with SecuredRouterHook][example - multiple instance with securedrouterhook].
+The usage of such use case can be study in [Example: Multiple Instance and Secured Routing](#example).
 
 ## SecuredRouterHook
 
@@ -101,19 +101,19 @@ There are 3 roels in 'angulardart-demo-employee' realm: 'staff', 'supervisor' an
 
 'vip', 'supervisor' and 'boss' are composite roles. They contains the former roles by default.
 
-### Example-Service-Only
+### <a name="example-service-only"></a>Example: Service Only
 
 This is the simplest way to get `KeycloakService` works with single instance without routing. There is no need of predefine configurations. And no need to use `instanceId` in all the `KeycloakService`'s APIs.
 
 Run with: `webdev serve example-service-only:2700`
 
-### Example
+### <a name="example"></a>Example: Multiple Instance and Secured Routing
 
 This is the complex example of having multiple instance and using `SecuredRouterHook` to secure Anuglar Routing.
 
 Run with `webdev serve example:2700`
 
-[RouterHook]:
-[AngularRouter]:
-[keycloak dart repository]:
-[keycloak dart repository: KeycloakInstance]:
+[RouterHook]:https://pub.dev/documentation/angular_router/2.0.0-alpha+23/angular_router/RouterHook-class.html
+[AngularRouter]:https://pub.dev/packages/angular_router/versions/2.0.0-alpha+23
+[keycloak dart repository]:https://github.com/itbh-at/keycloak
+[keycloak dart repository: KeycloakInstance]:https://github.com/itbh-at/keycloak/blob/master/lib/src/keycloak_instance.dart
