@@ -4,11 +4,18 @@ import 'package:keycloak/keycloak.dart';
 import 'keycloak_service.dart';
 import 'keycloak_service_config.dart';
 
+/// An implementation of the [KeycloakService].
+///
+/// The KeycloakService is a separate abstract class to indicate the public API and hide
+/// internal details for the average user.
 @Injectable()
 class KeycloakServiceImpl extends KeycloakService {
   final _config = Map<String, KeycloackServiceInstanceConfig>();
 
+  /// Always store the latest initiated [KeycloakInstance].
   KeycloakInstance _initiatedInstance;
+
+  /// Always store the latest initiated instance Id.
   String _initiatedInstanceId;
   bool _autoUpdateToken = false;
   int _autoUpdateMinValidity = 30;
@@ -25,15 +32,11 @@ class KeycloakServiceImpl extends KeycloakService {
     if (_initiatedInstance == null) {
       return false;
     } else if (instanceId != null && instanceId != _initiatedInstanceId) {
+      // Even there is [_initiatedInstance], but [_initiatedInstanceId] doesn't match
+      // This still failed. This is crucial check for multiple instances situation.
       return false;
     }
     return true;
-  }
-
-  void _verifyInitialization(String instanceId) {
-    if (!isInstanceInitiated(instanceId: instanceId)) {
-      throw Exception('Keycloak instance $instanceId is not initiated.');
-    }
   }
 
   @override
@@ -79,6 +82,7 @@ class KeycloakServiceImpl extends KeycloakService {
         break;
     }
 
+    // Always use the redirected origin URL if present.
     if (redirectedOrigin != null) {
       initOption.redirectUri = redirectedOrigin;
     } else if (config.redirectUri != null) {
@@ -153,7 +157,7 @@ class KeycloakServiceImpl extends KeycloakService {
   }
 
   @override
-  Future<bool> refreshToken({String instanceId, num minValidity = 30}) async {
+  Future<bool> updateToken({String instanceId, num minValidity = 30}) async {
     _verifyInitialization(instanceId);
     return _initiatedInstance.updateToken(minValidity);
   }
@@ -162,5 +166,11 @@ class KeycloakServiceImpl extends KeycloakService {
   KeycloakInstance getInstance([String instanceId]) {
     _verifyInitialization(instanceId);
     return _initiatedInstance;
+  }
+
+  void _verifyInitialization(String instanceId) {
+    if (!isInstanceInitiated(instanceId: instanceId)) {
+      throw Exception('Keycloak instance $instanceId is not initiated.');
+    }
   }
 }
