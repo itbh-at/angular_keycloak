@@ -9,13 +9,20 @@ import 'routes.dart';
   Routes,
   RoutePaths
 ], template: '''
-  <h2>The Cash Machine</h2>
-  <p>Supervisor only</p>
+  <div class="employee container">
+    <h4>The Cash Machine</h4>
+    <p>Money money money.</p>
 
-  <div class="sub-nav">
-  <a [routerLink]="RoutePaths.bossRoom.toUrl()">Boss Room</a>
+    <div>What do you want to do next?</div>
+    <ul><li>
+      <div class="sub-nav">
+      Be the 
+      <a [routerLink]="RoutePaths.bossRoom.toUrl()">Boss</a>
+      </div>
+    </li></ul>
+    
+    <router-outlet [routes]="Routes.all">
+    </router-outlet>
   </div>
-  <router-outlet [routes]="Routes.all">
-  </router-outlet>
   ''')
 class CashierComponent {}

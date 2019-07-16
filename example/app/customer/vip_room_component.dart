@@ -1,7 +1,9 @@
 import 'package:angular/angular.dart';
 
 @Component(selector: 'vip-room', template: '''
-  <h2>VIP room</h2>
-  <p>VIP customer only</p>
+  <div class="customer container">
+    <h3>VIP room</h3>
+    <p>Champange?</p>
+  </div>
   ''')
 class VipRoomComponent {}

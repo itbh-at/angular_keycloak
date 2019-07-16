@@ -13,23 +13,16 @@ import 'routes.dart';
     routerDirectives,
   ],
   exports: [Routes, RoutePaths],
-  //Blanket provider for all kind of Angular Component. VERY BAD. But too lazy to find the right one for each component.
   providers: [popupBindings],
   template: '''
-  <h1>Keycloak Service Example</h1>
-  <a [routerLink]="RoutePaths.customer.toUrl()">Customer</a>
-  <a [routerLink]="RoutePaths.employee.toUrl()">Employee</a>
-  <a [routerLink]="RoutePaths.public.toUrl()">Public</a>
+  <div class="main">
+    <h1>Keycloak Service Example</h1>
+    <a [routerLink]="RoutePaths.customer.toUrl()">Customer</a>
+    <a [routerLink]="RoutePaths.employee.toUrl()">Employee</a>
+    <a [routerLink]="RoutePaths.public.toUrl()">Public</a>
 
-  <router-outlet [routes]="Routes.all"></router-outlet>
+    <router-outlet [routes]="Routes.all"></router-outlet>
+  </div>
 ''',
 )
-class ExampleAppComponent {
-  final KeycloakService _keycloakService;
-
-  ExampleAppComponent(this._keycloakService);
-
-  void logoutCustomer() async {
-    _keycloakService.logout(instanceId: 'customer');
-  }
-}
+class ExampleAppComponent {}

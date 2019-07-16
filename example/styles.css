@@ -8,3 +8,36 @@ body {
   padding: 0;
   font-family: "Roboto", sans-serif;
 }
+
+.main {
+  padding: 16px;
+}
+
+.denied-access {
+  padding: 8px;
+  color: red;
+}
+
+.sub-nav {
+  padding: 4px;
+}
+
+.customer {
+  border-color: turquoise;
+}
+
+.employee {
+  border-color: orange;
+}
+
+.public {
+  border-color: brown;
+}
+
+.container {
+  padding-left: 8px;
+  padding-top: 4px;
+
+  border-left-width: 3px;
+  border-left-style: groove;
+}

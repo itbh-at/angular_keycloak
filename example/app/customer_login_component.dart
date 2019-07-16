@@ -9,17 +9,25 @@ import 'route_paths.dart';
 
 @Component(
     selector: 'customer-login',
-    directives: [MaterialButtonComponent],
+    directives: [MaterialButtonComponent, NgIf],
     template: '''
-  <h2>Customer Login</h2>
-  <p>Please click the button to log in as a customer</p>
-  <material-button (trigger)="login"></material-button>
-  ''')
+    <div class="customer container">
+      <h2>Customer Login</h2>
+      <div class="denied-access">
+        Access Denied for "{{fullOriginUrl}}".<br>
+        Please log in.
+      </div>
+      <material-button raised (trigger)="login">Login</material-button>
+    </div>
+    ''')
 class CustomerLoginComponent implements OnActivate {
   final KeycloakService _keycloakService;
   final LocationStrategy _locationStrategy;
 
   var _originUri = RoutePaths.customer.toUrl();
+
+  String get fullOriginUrl =>
+      '${window.location.origin}/${_locationStrategy.prepareExternalUrl(_originUri)}';
 
   CustomerLoginComponent(this._keycloakService, this._locationStrategy);
 
@@ -33,12 +41,16 @@ class CustomerLoginComponent implements OnActivate {
 
   void login() async {
     final keycloakInstanceId = 'customer';
+
+    // A safety check to ensure the instance is initiated in the Service.
+    // The current example allows user to type in the URL of this component directly,
+    // which might circumvent SecuredRouterHook's initiatlization.
     if (!_keycloakService.isInstanceInitiated(instanceId: keycloakInstanceId)) {
       await _keycloakService.initWithProvidedConfig(
           instanceId: keycloakInstanceId);
     }
-    final url =
-        '${window.location.origin}/${_locationStrategy.prepareExternalUrl(_originUri)}';
-    _keycloakService.login(instanceId: keycloakInstanceId, redirectUri: url);
+
+    _keycloakService.login(
+        instanceId: keycloakInstanceId, redirectUri: fullOriginUrl);
   }
 }

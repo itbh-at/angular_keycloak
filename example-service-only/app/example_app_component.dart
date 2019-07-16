@@ -3,15 +3,6 @@ import 'package:angular_components/material_button/material_button.dart';
 import 'package:angular_keycloak/angular_keycloak.dart';
 import 'package:keycloak/keycloak.dart';
 
-/// Example for using Single Instance [KeycloakService]
-///
-/// All default setup, including loading 'keycloak.json' from the root.
-/// Notice that `instanceId` is skipped in all method call. Since we using
-/// only single instance, it is not needed as all.
-///
-/// [KeycloakService.init()] is called in the [ngOnInit()] callback. This
-/// will ensure it is the first thing getting call when the application startup.
-/// When there is a token in the URL hash, it will be parse immediately.
 @Component(
   selector: 'my-app',
   directives: [MaterialButtonComponent, NgIf],

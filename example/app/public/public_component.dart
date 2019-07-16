@@ -9,13 +9,27 @@ import 'routes.dart';
   Routes,
   RoutePaths
 ], template: '''
-  <h1>Public Area</h1>
-  <p>Anyone can come here.</p>
+  <div class="public container">
+    <h2>Public Area</h2>
+    <p>Anyone can come here.</p>
 
-  <div class="sub-nav">
-  <a [routerLink]="RoutePaths.door.toUrl()">Door</a>
-  <a [routerLink]="RoutePaths.window.toUrl()">Window</a>
+    <div>What do you want to do next?</div>
+    <ul>
+      <li>
+        <div class="sub-nav">
+          Stand in front of the 
+          <a [routerLink]="RoutePaths.door.toUrl()">Door</a>
+        </div>
+      </li>
+
+      <li>
+        <div class="sub-nav">
+          Look at the 
+          <a [routerLink]="RoutePaths.window.toUrl()">Window</a>
+        </div>
+    </li>
+    </ul>
+    <router-outlet [routes]="Routes.all"></router-outlet>
   </div>
-  <router-outlet [routes]="Routes.all"></router-outlet>
   ''')
 class PublicComponent {}

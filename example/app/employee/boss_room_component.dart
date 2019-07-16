@@ -1,7 +1,9 @@
 import 'package:angular/angular.dart';
 
 @Component(selector: 'boss-room', template: '''
-  <h2>The BOSS room</h2>
-  <p>Boss only</p>
+  <div class="employee container">
+    <h2>BOSS ROOM</h2>
+    <p>You're the boss.</p>
+  </div>
   ''')
 class BossRoomComponent {}

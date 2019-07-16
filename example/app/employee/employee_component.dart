@@ -13,17 +13,29 @@ import 'routes.dart';
   Routes,
   RoutePaths
 ], template: '''
-  <h1>Employee Area</h1>
-  <p>Only employee can come here.</p>
+  <div class="employee container">
+    <h2>Employee Area</h2>
+    <p>Good Evening, <strong>{{name}}</strong></p>
+    <p>You are here to serve.</p>
+    
+    <div>What do you want to do next?</div>
+    <ul>
+      <li>
+        <material-button raised 
+                         (trigger)="(logout)">
+          Logout
+        </material-button>  
+      </li>
 
-  <p>welcome {{name}}</p>
-  <material-button (trigger)="(logout)">Logout</material-button>
-
-  <div class="sub-nav">
-  <a [routerLink]="RoutePaths.kitchen.toUrl()">Kitchen</a>
+      <li>
+        <div class="sub-nav">
+          Go to the
+          <a [routerLink]="RoutePaths.kitchen.toUrl()">Kitchen</a>.
+        </div>
+      </li>
+    </ul>
+    <router-outlet [routes]="Routes.all"></router-outlet>
   </div>
-  <router-outlet [routes]="Routes.all">
-  </router-outlet>
   ''')
 class EmployeeComponent implements OnActivate {
   final KeycloakService _keycloakService;

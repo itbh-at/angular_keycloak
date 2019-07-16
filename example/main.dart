@@ -7,6 +7,10 @@ import 'app/example_app_component.template.dart' as ng;
 import 'app/providers.dart';
 import 'main.template.dart' as self;
 
+/// Example of using [KeycloakService] with  Multiple configs and [SecuredRouterHook].
+///
+/// We inject the configs with [FactoryProvider], and defined them in `app/providers.dart`.
+
 @GenerateInjector([
   FactoryProvider(KeycloackServiceConfig, keycloakConfigFactory),
   FactoryProvider(SecuredRouterHookConfig, securedRouterHookConfigFactory),

@@ -14,24 +14,43 @@ import 'routes.dart';
   Routes,
   RoutePaths
 ], template: '''
-  <h1>Customer Area</h1>
-  <p>Only customer can come here.</p>
-  
-  <p>welcome {{name}}</p>
-  <material-button (trigger)="(logout)">Logout</material-button>  
-  
-  <div *ngIf="stoppedByGuard">
-    Mere member is not allow to enter the VIP area.
-  </div>
-  <div *ngIf="!stoppedByGuard">
-    <material-button (trigger)="(goToVIP)">Go into VIP room</material-button>  
-  </div>
+    <div class="customer container">
+      <h2>Customer Area</h2>
+      <p>welcome! <strong>{{name}}</strong></p>
+      <p>This is a member only area. Please suit yourself.</p>
+      
+      <div>What do you want to do next?</div>
+      <ul>
+        <li>
+          <material-button raised 
+                           (trigger)="(logout)">
+            Logout
+          </material-button>  
+        </li>
 
+        <li>
+          <div *ngIf="stoppedByGuard"
+              class="denied-access">
+            Mere member is not allow to enter the VIP area.
+          </div>
+          <div *ngIf="!stoppedByGuard">
+            <material-button raised 
+                            (trigger)="(goToVIP)">
+              Go into VIP room
+            </material-button>  
+          </div>
+        </li>
 
-  <div class="sub-nav">
-  <a [routerLink]="RoutePaths.dinning.toUrl()">Dinning</a>
-  </div>
-  <router-outlet [routes]="Routes.all"></router-outlet>
+        <li>
+          <div class="sub-nav">
+            Visit the
+            <a [routerLink]="RoutePaths.dinning.toUrl()">Dinning</a>
+            area.
+          </div>
+        </li>
+      </ul>
+      <router-outlet [routes]="Routes.all"></router-outlet>
+    </div>
   ''')
 class CustomerComponent implements OnActivate {
   final KeycloakService _keycloakService;
