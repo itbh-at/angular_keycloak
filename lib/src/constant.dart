@@ -15,6 +15,3 @@ import 'keycloak_service_impl.dart';
 const keycloakProviders = [
   ClassProvider(KeycloakService, useClass: KeycloakServiceImpl),
 ];
-
-// TODO: Do we need this?
-const keycloakModule = Module(provide: keycloakProviders);
