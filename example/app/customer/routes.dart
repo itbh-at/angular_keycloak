@@ -20,5 +20,6 @@ class Routes {
       routePath: RoutePaths.washroom,
       component: washroom_template.WashroomComponentNgFactory);
 
-  static final all = [dinning, vipRoom, washroom];
+  static final fromCustomer = [dinning, vipRoom];
+  static final fromDining = [washroom];
 }

@@ -20,5 +20,7 @@ class Routes {
       routePath: RoutePaths.kitchen,
       component: kitchen_template.KitchenComponentNgFactory);
 
-  static final all = [bossRoom, cashier, kitchen];
+  static final fromEmployee = [kitchen];
+  static final fromKitchen = [cashier];
+  static final fromCashier = [bossRoom];
 }

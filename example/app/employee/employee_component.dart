@@ -34,7 +34,7 @@ import 'routes.dart';
         </div>
       </li>
     </ul>
-    <router-outlet [routes]="Routes.all"></router-outlet>
+    <router-outlet [routes]="Routes.fromEmployee"></router-outlet>
   </div>
   ''')
 class EmployeeComponent implements OnActivate {

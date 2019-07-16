@@ -21,7 +21,7 @@ import 'routes.dart';
       </div>
     </li></ul>
     
-    <router-outlet [routes]="Routes.all">
+    <router-outlet [routes]="Routes.fromCashier">
     </router-outlet>
   </div>
   ''')

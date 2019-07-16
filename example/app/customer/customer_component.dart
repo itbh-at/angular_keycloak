@@ -49,7 +49,7 @@ import 'routes.dart';
           </div>
         </li>
       </ul>
-      <router-outlet [routes]="Routes.all"></router-outlet>
+      <router-outlet [routes]="Routes.fromCustomer"></router-outlet>
     </div>
   ''')
 class CustomerComponent implements OnActivate {
