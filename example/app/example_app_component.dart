@@ -2,7 +2,6 @@ import 'package:angular/angular.dart';
 import 'package:angular_router/angular_router.dart' show routerDirectives;
 import 'package:angular_components/laminate/popup/module.dart';
 
-import 'package:angular_keycloak/angular_keycloak.dart';
 import 'package:angular_router/angular_router.dart';
 
 import 'routes.dart';

@@ -17,7 +17,7 @@ import 'main.template.dart' as self;
   keycloakProviders,
   ClassProvider(RouterHook, useClass: SecuredRouterHook),
   ValueProvider.forToken(appBaseHref, '/'),
-  routerProviders, // You can use routerProviders in production
+  routerProvidersHash, // You can use routerProviders in production
 ])
 final InjectorFactory injector = self.injector$Injector;
 
