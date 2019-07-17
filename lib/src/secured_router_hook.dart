@@ -74,9 +74,9 @@ class SecuredRouterHook implements RouterHook {
       for (final securingPath in securedRoute.paths) {
         final securedPath = securingPath.toUrl();
         if (_match(path, securedPath)) {
+          bool accessDenied = false;
           if (await _verifyOrInitiateKeycloakInstance(
               securedRoute.keycloakInstanceId, path)) {
-            bool accessDenied = false;
             if (!_isAuthenticated(securedRoute.keycloakInstanceId)) {
               accessDenied = true;
             } else if (securedRoute.isAuthorizingRoute &&
@@ -84,14 +84,16 @@ class SecuredRouterHook implements RouterHook {
                     securedRoute.authorizedRoles)) {
               accessDenied = true;
             }
+          } else {
+            accessDenied = true;
+          }
 
-            if (accessDenied) {
-              // Before we redirect user to another path, We store the current path.
-              // It will be used in [navigationParams] to pass down the original path.
-              final redirectedPathUrl = securedRoute.redirectPath.toUrl();
-              _directedAwayOrigins[redirectedPathUrl] = path;
-              return redirectedPathUrl;
-            }
+          if (accessDenied) {
+            // Before we redirect user to another path, We store the current path.
+            // It will be used in [navigationParams] to pass down the original path.
+            final redirectedPathUrl = securedRoute.redirectPath.toUrl();
+            _directedAwayOrigins[redirectedPathUrl] = path;
+            return redirectedPathUrl;
           }
         }
       }
@@ -145,6 +147,8 @@ class SecuredRouterHook implements RouterHook {
                     securedRoute.authorizedRoles)) {
               return false;
             }
+          } else {
+            return false;
           }
         }
       }
