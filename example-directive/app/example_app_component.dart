@@ -19,15 +19,15 @@ import 'package:keycloak/keycloak.dart';
       <p><strong>Keycloak Server:</strong> {{keycloakServer}}</p>
       <p><strong>Keycloak Realm:</strong> {{keycloakRealm}}</p>
 
-      <p *authenticated>Welcome dear user</p>
+      <p *authenticated="instanceId">Welcome dear user</p>
 
-      <material-button  *not-authenticated 
+      <material-button  *notAuthenticated="instanceId"
                         raised
                         (trigger)="login">
         Login
       </material-button>
 
-      <div *authenticated>
+      <div *authenticated="instanceId">
         <material-button  *ngIf="!hasProfile" 
                           raised 
                           (trigger)="loadUser">
@@ -52,6 +52,7 @@ class ExampleAppComponent implements OnInit {
   final KeycloakService _keycloakService;
 
   KeycloakProfile _keycloakProfile;
+  String instanceId;
 
   String get keycloakServer => _keycloakService.getInstance().authServerUrl;
   String get keycloakRealm => _keycloakService.getInstance().realm;
@@ -65,7 +66,7 @@ class ExampleAppComponent implements OnInit {
 
   @override
   void ngOnInit() async {
-    await _keycloakService.init();
+    instanceId = await _keycloakService.init();
   }
 
   void login() {
