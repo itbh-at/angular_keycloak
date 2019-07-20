@@ -2,8 +2,8 @@ import 'package:angular/angular.dart';
 
 import 'keycloak_service.dart';
 
-/// Causes an element and its contents to be conditionally added/removed from
-/// the DOM based on the authentication status with [KeycloakService].
+/// Causes an element and its contents to be added at the DOM
+/// based on the authentication status with [KeycloakService].
 ///
 /// Instance ID of specific [KeycloakInstance] can be provided,
 /// of leave blank for single instance usage.
@@ -59,7 +59,7 @@ class AuthenticatedDirective implements DoCheck {
   }
 }
 
-/// The opposite of [AuthenticatedDirective], this hide the element when
+/// The opposite of [AuthenticatedDirective], this add the element when
 /// [KeycloakService] is not authenticated.
 @Directive(
   selector: '[notAuthenticated]',
