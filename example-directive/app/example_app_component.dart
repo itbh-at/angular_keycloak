@@ -1,12 +1,14 @@
 import 'package:angular/angular.dart';
 import 'package:angular_components/material_button/material_button.dart';
 import 'package:angular_keycloak/angular_keycloak.dart';
+import 'package:angular_keycloak/src/authorized_directive.dart';
 import 'package:keycloak/keycloak.dart';
 
 @Component(
   selector: 'my-app',
   directives: [
     AuthenticatedDirective,
+    AuthorizedDirective,
     NotAuthenticatedDirective,
     MaterialButtonComponent,
     NgIf
@@ -43,7 +45,16 @@ import 'package:keycloak/keycloak.dart';
                           (trigger)="logout">
           Logout
         </material-button>
+
+        <h3>Roles Zone</h3>
+
+        <div *authorized="read: ['supervisor']; write: ['boss']">
+          Supervisor can see
+          Boss can type
+          <input #input1 type="text" />
+        </div>
       </div>
+
     </div>
   </div>
 ''',
