@@ -48,10 +48,16 @@ import 'package:keycloak/keycloak.dart';
 
         <h3>Roles Zone</h3>
 
-        <div *authorized="read: ['supervisor']; write: ['boss']">
+        <div *authorized="read: ['supervisor']; write: ['boss']; let cw=canWrite">
           Supervisor can see
-          Boss can type
-          <input #input1 type="text" />
+          Boss can type {{cw}}
+          <input readWrite type="text" />
+          <form>
+          <fieldset [disabled]="!cw">
+            <input  type="text" />
+            <input  type="button" />
+          </fieldset>
+          </form>
         </div>
       </div>
 

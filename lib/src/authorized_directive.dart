@@ -40,7 +40,8 @@ class AuthorizedDirective implements DoCheck {
   void ngDoCheck() {
     if (!_checked) {
       if (_isAuthorized(_readOnlyRoles)) {
-        _viewContainer.createEmbeddedView(_templateRef);
+        final viewRef = _viewContainer.createEmbeddedView(_templateRef);
+        viewRef.setLocal('canWrite', _isAuthorized(_writeRoles));
       } else {
         _viewContainer.clear();
       }
