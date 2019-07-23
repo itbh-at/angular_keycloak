@@ -1,3 +1,5 @@
+import 'dart:html' show window;
+
 import 'package:angular/angular.dart';
 import 'package:angular_components/material_button/material_button.dart';
 import 'package:angular_keycloak/angular_keycloak.dart';
@@ -46,18 +48,20 @@ import 'package:keycloak/keycloak.dart';
           Logout
         </material-button>
 
-        <h3>Roles Zone</h3>
 
-        <div *authorized="read: ['supervisor']; write: ['boss']; let cw=canWrite">
-          Supervisor can see
-          Boss can type {{cw}}
-          <input readWrite type="text" />
-          <form>
-          <fieldset [disabled]="!cw">
-            <input  type="text" />
-            <input  type="button" />
-          </fieldset>
-          </form>
+        <div *authorized="readonlyRoles: ['supervisor']; roles: ['boss']; let ro = readonly">
+          <h3>This Year Bonus</h3>
+          Supervisor can see.
+          Boss can change.
+          <br>
+
+          <input [readonly]="ro" type="text" value="1000" />
+          <br>
+          <material-button  raised
+                            [disabled]="ro" 
+                            (trigger)="updateBonus">
+            Update Bonus
+          </material-button>
         </div>
       </div>
 
@@ -96,5 +100,9 @@ class ExampleAppComponent implements OnInit {
 
   void loadUser() async {
     _keycloakProfile = await _keycloakService.getUserProfile();
+  }
+
+  void updateBonus() {
+    window.alert('Bonus update!');
   }
 }
