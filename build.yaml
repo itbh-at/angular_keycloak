@@ -1,0 +1,13 @@
+targets:
+  $default:
+    sources:
+      - example/**
+      - example-service-only/**
+      - lib/**
+      # Note that it is important to include these in the default target.
+      - pubspec.*
+    builders:
+      build_web_compilers|entrypoint:
+        generate_for:
+          - example/main.dart
+          - example-service-only/main.dart
