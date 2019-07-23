@@ -48,6 +48,10 @@ import 'package:keycloak/keycloak.dart';
           Logout
         </material-button>
 
+        <div *authorized="roles: ['boss']">
+          <h2>boss only</h2>
+        </div>
+
 
         <div *authorized="readonlyRoles: ['supervisor']; roles: ['boss']; let ro = readonly">
           <h3>This Year Bonus</h3>

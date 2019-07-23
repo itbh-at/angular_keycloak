@@ -38,9 +38,9 @@ class AuthorizedDirective implements DoCheck {
   final ViewContainerRef _viewContainer;
 
   String _instanceId;
-  List<String> _readonlyRoles;
-  List<String> _roles;
   bool _checked = false;
+  var _readonlyRoles = <String>[];
+  var _roles = <String>[];
 
   AuthorizedDirective(
       this._keycloakService, this._templateRef, this._viewContainer);
@@ -63,12 +63,27 @@ class AuthorizedDirective implements DoCheck {
   @override
   void ngDoCheck() {
     if (!_checked) {
-      if (_isAuthorized(_readonlyRoles)) {
+      var shouldAddContent = false;
+      var shouldSetReadonly = false;
+      if (_readonlyRoles.isEmpty) {
+        if (_roles.isNotEmpty) {
+          shouldAddContent = _isAuthorized(_roles);
+        } else {
+          throw ArgumentError(
+              '[authorized] requires at least setting the "roles".');
+        }
+      } else if (_isAuthorized(_readonlyRoles)) {
+        shouldAddContent = true;
+        shouldSetReadonly = _roles.isNotEmpty && !_isAuthorized(_roles);
+      }
+
+      if (shouldAddContent) {
         final viewRef = _viewContainer.createEmbeddedView(_templateRef);
-        viewRef.setLocal('readonly', !_isAuthorized(_roles));
+        viewRef.setLocal('readonly', shouldSetReadonly);
       } else {
         _viewContainer.clear();
       }
+
       _checked = true;
     }
   }
