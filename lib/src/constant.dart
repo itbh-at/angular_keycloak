@@ -1,5 +1,6 @@
 import 'package:angular/angular.dart';
 
+import 'keycloak_instance_factory.dart';
 import 'keycloak_service.dart';
 import 'keycloak_service_impl.dart';
 
@@ -13,5 +14,6 @@ import 'keycloak_service_impl.dart';
 /// runApp(ng.MyAppComponentNgFactory, createInjector: injector);
 /// ```
 const keycloakProviders = [
+  ClassProvider(KeycloakInstanceFactory),
   ClassProvider(KeycloakService, useClass: KeycloakServiceImpl),
 ];
