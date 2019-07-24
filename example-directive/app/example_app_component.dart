@@ -2,19 +2,13 @@ import 'dart:html' show window;
 
 import 'package:angular/angular.dart';
 import 'package:angular_components/material_button/material_button.dart';
-import 'package:angular_keycloak/angular_keycloak.dart';
-import 'package:angular_keycloak/src/authorized_directive.dart';
 import 'package:keycloak/keycloak.dart';
+
+import 'package:angular_keycloak/angular_keycloak.dart';
 
 @Component(
   selector: 'my-app',
-  directives: [
-    AuthenticatedDirective,
-    AuthorizedDirective,
-    NotAuthenticatedDirective,
-    MaterialButtonComponent,
-    NgIf
-  ],
+  directives: [KcSecurity, MaterialButtonComponent, NgIf],
   template: '''
   <div class="main">
     <h1>Keycloak Directives</h1>
@@ -23,15 +17,15 @@ import 'package:keycloak/keycloak.dart';
       <p><strong>Keycloak Server:</strong> {{keycloakServer}}</p>
       <p><strong>Keycloak Realm:</strong> {{keycloakRealm}}</p>
 
-      <p *authenticated="instanceId">Welcome dear user</p>
+      <p *kcSecurity="instanceId">Welcome dear user</p>
 
-      <material-button  *notAuthenticated="instanceId"
+      <material-button  *kcSecurity="instanceId; showWhenDenied: true"
                         raised
                         (trigger)="login">
         Login
       </material-button>
 
-      <div *authenticated="instanceId">
+      <div *kcSecurity="instanceId">
         <material-button  *ngIf="!hasProfile" 
                           raised 
                           (trigger)="loadUser">
@@ -48,12 +42,14 @@ import 'package:keycloak/keycloak.dart';
           Logout
         </material-button>
 
-        <div *authorized="roles: ['boss']">
+        <div *kcSecurity="roles: ['boss']">
           <h2>boss only</h2>
         </div>
+        <div *kcSecurity="showWhenDenied: true; roles: ['boss']">
+          <h2>No one can see</h2>
+        </div>
 
-
-        <div *authorized="readonlyRoles: ['supervisor']; roles: ['boss']; let ro = readonly">
+        <div *kcSecurity="readonlyRoles: ['supervisor']; roles: ['boss']; let ro = readonly">
           <h3>This Year Bonus</h3>
           Supervisor can see.
           Boss can change.
