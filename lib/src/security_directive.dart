@@ -73,6 +73,9 @@ import 'keycloak_service.dart';
 ///   You are not authorized to enter the VIP room.
 /// </div>
 /// ```
+///
+/// Please refer the the `example-directive/app/example_app_component.html`
+/// for more html examples.
 @Directive(selector: '[kcSecurity]')
 class KcSecurity implements DoCheck {
   final KeycloakService _keycloakService;
@@ -89,6 +92,8 @@ class KcSecurity implements DoCheck {
 
   @Input()
   set kcSecurity(String instanceId) {
+    // It seems that @Input never pass in a `null` String, even given one.
+    // It will always became an empty String.
     _instanceId = instanceId.isNotEmpty ? instanceId : null;
   }
 

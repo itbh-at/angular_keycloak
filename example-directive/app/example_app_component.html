@@ -1,0 +1,95 @@
+<div class="main">
+  <h1>Keycloak Directives</h1>
+
+  <div *ngIf="isKeycloakInitiatized">
+    <!-- Both Log In buttons will only show when respectively keycloak instance is
+         not initialized or authenticated -->
+    <material-button
+      *kcSecurity="employeeInstanceId; showWhenDenied: true"
+      raised
+      (trigger)="(loginEmployee)"
+    >
+      Employee Login
+    </material-button>
+
+    <material-button
+      *kcSecurity="customerInstanceId; showWhenDenied: true"
+      raised
+      (trigger)="(loginCustomer)"
+    >
+      Customer Login
+    </material-button>
+
+    <!-- This will show as long as authenticated, regardless of which instance -->
+    <h2 *kcSecurity>Welcome {{ instanceId }}</h2>
+
+    <!-- `instanceId` return the current active one, it achieve the same thing as above -->
+    <material-button *kcSecurity="instanceId" raised (trigger)="(logout)">
+      Logout
+    </material-button>
+
+    <!-- The following div section will only show for employee keycloak instance -->
+    <div *kcSecurity="employeeInstanceId">
+      <h3>Employee Corner</h3>
+
+      <!-- The following div will only show for user with 'boss' roles -->
+      <div *kcSecurity="roles: ['boss']">
+        <p>Welcome back boss, only you can see this.</p>
+      </div>
+
+      <!-- Contrary to above, this only show for user without 'boss' roles -->
+      <div *kcSecurity="showWhenDenied: true; roles: ['boss']">
+        <p>Hurry up and work!</p>
+      </div>
+
+      <!-- The following will show for user with 'supervisor' and 'boss' roles.
+           There's one different, for user with only 'supervisor' role,
+           the variable of 'readonly' will be true. -->
+      <div
+        *kcSecurity="readonlyRoles: ['supervisor']; roles: ['boss']; let ro = readonly"
+      >
+        <h3>This Year Bonus</h3>
+        Supervisor can see. Boss can change.
+        <br />
+
+        <!-- In this example, we use the readonly flag to set the input to readonly mode
+             and diable the button to update the bonus. -->
+        <input [readonly]="ro" type="text" value="1000" />
+        <br />
+        <material-button raised [disabled]="ro" (trigger)="(updateBonus)">
+          Update Bonus
+        </material-button>
+      </div>
+    </div>
+
+    <!-- The following will only show when customer keycloak instance is authenticated.
+         'member' role only user will see the menu option, but unable to change it.
+         'vip' role user will be able to change the menu. -->
+    <div
+      *kcSecurity="
+        customerInstanceId;
+        readonlyRoles: ['member'];
+        roles: ['vip'];
+        let ro = readonly
+      "
+    >
+      <h3>This Week Menu</h3>
+      <p>Member can see. VIP can edit.</p>
+      <fieldset [disabled]="ro">
+        <h4>Appetizer</h4>
+        <input type="checkbox" id="app1" checked />
+        <label for="app1">Clam Chowder</label>
+
+        <input type="checkbox" id="app2" />
+        <label for="app2">Caesar salad</label>
+
+        <h4>Main Course</h4>
+        <input type="checkbox" id="mc1" />
+        <label for="mc1">Agio Olio</label>
+
+        <input type="checkbox" id="mc2" />
+        <label for="mc2">Steak</label>
+      </fieldset>
+    </div>
+  </div>
+</div>
