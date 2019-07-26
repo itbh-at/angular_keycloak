@@ -86,9 +86,38 @@ The above code demonstrated a few security measure:
 3. All paths starting with `/employee/cashier` need to be has the authorized roles of 'staff' and 'supervisor', either from the Realms or the Clients.
 4. Unauthorized access will simply blocked, no navigation will be done.
 
+## kcSecurity [Structural Directive]
+
+Akin to [NgIf], `kcSecurity` primary function is to show or hide content in the DOM base on the authentication and/or authorization status of the `KeycloakService`. In the circumstance of using multiple instances, a getter function which return instance Id can be provided.
+
+```'html'
+<p *kcSecurity>Authenticated!</p>
+<p *kcSecurity="getInstanceId">Authenticated for {{getInstanceId}}!</p>
+```
+
+Further. `roles` can be provided in the [Microsyntax] to restrict the condition further for only authorized user, i.e. user with specific roles. If some roles have less authorization than other, e.g. read vs write, a `readonlyRoles` can be provided in addition to `roles`. A `readonly` variable can be read from, which will be true if user only has roles in readonly one, but not in the `roles`.
+
+```'html'
+<div *kcSecurity="roles: ['vip']">VIP only.</div>
+<div *kcSecurity="readonlyRoles: ['member'];
+                  roles: ['vip'];
+                  let ro = readonly">
+  VIP can do everything. Member will have {{ro}} equal to true.
+</div>
+```
+
+For access denied, all the negative outcome when using this directive, just supply a `showWhenDenied: true` in the microsyntax.
+
+```'html'
+<p *kcSecurity="showWhenDenied: true">Not authenticated, please log in!</p>
+<p *kcSecurity="roles: ['supervisor']; showWhenDenied: true">Access Denied!</p>
+```
+
+Refer to [Example: Security Directive](#example-directive) for more examples.
+
 ## Running the Examples
 
-There are 2 examples in this package. They can be serve separately without interfering each other.
+There are 3 examples in this package. They can be serve separately without interfering each other.
 
 ### Setup Keycloak Server
 
@@ -109,11 +138,20 @@ Run with: `webdev serve example-service-only:2700`
 
 ### <a name="example"></a>Example: Multiple Instance and Secured Routing
 
-This is the complex example of having multiple instance and using `SecuredRouterHook` to secure Anuglar Routing.
+This is the complex example of having multiple instances and using `SecuredRouterHook` to secure Anuglar Routing.
 
 Run with `webdev serve example:2700`
 
-[RouterHook]:https://pub.dev/documentation/angular_router/2.0.0-alpha+23/angular_router/RouterHook-class.html
-[AngularRouter]:https://pub.dev/packages/angular_router/versions/2.0.0-alpha+23
-[keycloak dart repository]:https://github.com/itbh-at/keycloak
-[keycloak dart repository: KeycloakInstance]:https://github.com/itbh-at/keycloak/blob/master/lib/src/keycloak_instance.dart
+### <a name="example-directive"></a>Example: Security Directive
+
+This is the example which show case how to use the `kcSecurity` directive. This example use multiple keycloak instance but without routing.
+
+Run with `webdev serve example-directive:2700`
+
+[routerhook]: https://pub.dev/documentation/angular_router/2.0.0-alpha+23/angular_router/RouterHook-class.html
+[angularrouter]: https://pub.dev/packages/angular_router/versions/2.0.0-alpha+23
+[keycloak dart repository]: https://github.com/itbh-at/keycloak
+[keycloak dart repository: keycloakinstance]: https://github.com/itbh-at/keycloak/blob/master/lib/src/keycloak_instance.dart
+[structural directive]: https://angulardart.dev/guide/structural-directives
+[ngif]: https://angulardart.dev/guide/template-syntax#ngIf
+[microsyntax]: https://angulardart.dev/guide/structural-directives#microsyntax
