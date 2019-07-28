@@ -113,7 +113,7 @@ class KeycloakServiceImpl extends KeycloakService {
   @override
   List<String> getRealmRoles({String instanceId}) {
     _verifyInitialization(instanceId);
-    return _initiatedInstance.realmAccess.roles;
+    return _initiatedInstance.realmAccess?.roles;
   }
 
   @override
@@ -121,7 +121,7 @@ class KeycloakServiceImpl extends KeycloakService {
     _verifyInitialization(instanceId);
 
     clientId = clientId ?? _initiatedInstance.clientId;
-    return _initiatedInstance.resourceAccess[clientId].roles;
+    return _initiatedInstance.resourceAccess[clientId]?.roles;
   }
 
   @override
@@ -173,7 +173,8 @@ class KeycloakServiceImpl extends KeycloakService {
 
   void _verifyInitialization(String instanceId) {
     if (!isInstanceInitiated(instanceId: instanceId)) {
-      throw Exception('Keycloak instance $instanceId is not initiated.');
+      throw UninitializedException(
+          'Keycloak instance $instanceId is not initiated.');
     }
   }
 }

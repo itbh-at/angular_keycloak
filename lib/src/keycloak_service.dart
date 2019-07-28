@@ -2,6 +2,14 @@ import 'package:keycloak/keycloak.dart';
 
 import 'keycloak_service_config.dart';
 
+/// Throw when Keycloak APIs are accessed while instance is
+/// not initialized.
+class UninitializedException implements Exception {
+  final String _msg;
+  const UninitializedException(this._msg);
+  String toString() => 'UninitializedException: $_msg';
+}
+
 /// Angular Service of Keycloak. Inject it at the root.
 ///
 /// ```
