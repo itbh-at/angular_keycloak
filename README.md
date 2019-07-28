@@ -138,7 +138,7 @@ Run with: `webdev serve example-service-only:2700`
 
 ### <a name="example"></a>Example: Multiple Instance and Secured Routing
 
-This is the complex example of having multiple instances and using `SecuredRouterHook` to secure Anuglar Routing.
+This is the complex example of having multiple instances and using `SecuredRouterHook` to secure Angular Routing.
 
 Run with `webdev serve example:2700`
 
@@ -147,6 +147,12 @@ Run with `webdev serve example:2700`
 This is the example which show case how to use the `kcSecurity` directive. This example use multiple keycloak instance but without routing.
 
 Run with `webdev serve example-directive:2700`
+
+## Running the Tests
+
+All the automated tests are run with `@TestOn("browser")` and runs on Chrome browser by default. You can make it runs on other browser by changing the `dart_test.yaml`.
+
+Run the test with `pub run build_runner test`
 
 [routerhook]: https://pub.dev/documentation/angular_router/2.0.0-alpha+23/angular_router/RouterHook-class.html
 [angularrouter]: https://pub.dev/packages/angular_router/versions/2.0.0-alpha+23

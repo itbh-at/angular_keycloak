@@ -1,9 +1,8 @@
-import 'package:angular_keycloak/angular_keycloak.dart';
-import 'package:angular_keycloak/src/keycloak_service.dart';
 @TestOn("browser")
+import 'package:angular_keycloak/angular_keycloak.dart';
 import 'package:keycloak/keycloak.dart';
-import 'package:test/test.dart';
 import 'package:mockito/mockito.dart';
+import 'package:test/test.dart';
 
 import 'package:angular_keycloak/src/keycloak_instance_factory.dart';
 import 'package:angular_keycloak/src/keycloak_service_impl.dart';
