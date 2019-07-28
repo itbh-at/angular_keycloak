@@ -133,20 +133,58 @@ main() {
         expect(captured.redirectUri, redirectUrl);
       });
     });
+
+    group('Update token', () {
+      setUp(() {
+        when(_mockFactory.create()).thenReturn(_mockInstance);
+      });
+
+      test('automatic when get token, with default config', () async {
+        await _service.init();
+        await _service.getToken();
+
+        verify(_mockInstance.updateToken(any));
+      });
+
+      test('automatic when get profile, with custom min validity', () async {
+        await _service
+            .init(KeycloackServiceInstanceConfig(autoUpdateMinValidity: 1234));
+        await _service.getUserProfile();
+
+        verify(_mockInstance.updateToken(1234));
+      });
+
+      test('turned off when configured.', () async {
+        await _service.init(KeycloackServiceInstanceConfig(autoUpdate: false));
+        await _service.getUserProfile();
+
+        verifyNever(_mockInstance.updateToken(any));
+      });
+
+      test('turned off when using implicit flow', () async {
+        await _service.init(
+            KeycloackServiceInstanceConfig(flowType: InitFlowType.implicit));
+        await _service.getUserProfile();
+
+        verifyNever(_mockInstance.updateToken(any));
+      });
+    });
   });
 
   group('Multiple instances', () {
+    final _employeeInstanceId = 'employee';
+    final _customerInstanceId = 'customer';
     final _configs = KeycloackServiceConfig([
       KeycloackServiceInstanceConfig(
-          id: 'employee',
+          id: _employeeInstanceId,
           configFilePath: 'employee.json',
           redirectUri: 'www.testing.com/employee',
           loadType: InitLoadType.checkSSO),
       KeycloackServiceInstanceConfig(
-          id: 'customer',
+          id: _customerInstanceId,
           configFilePath: 'customer.json',
           redirectUri: 'www.testing.com/customer',
-          loadType: InitLoadType.checkSSO)
+          loadType: InitLoadType.loginRequired)
     ]);
 
     MockKeycloakInstance _mockEmployeeInstance;
@@ -164,7 +202,47 @@ main() {
       _service = KeycloakServiceImpl(_mockFactory, _configs);
     });
 
-    test('with predefined configuration', () {});
+    test('init with id', () async {
+      await _service.initWithProvidedConfig(instanceId: _employeeInstanceId);
+
+      verifyNever(_mockCustomerInstance.init(any));
+      final captured = verify(_mockEmployeeInstance.init(captureAny))
+          .captured[0] as KeycloakInitOptions;
+      expect(captured.redirectUri, 'www.testing.com/employee');
+      expect(captured.onLoad, 'check-sso');
+
+      expect(_service.isInstanceInitiated(instanceId: _employeeInstanceId),
+          isTrue);
+      expect(_service.isInstanceInitiated(instanceId: _customerInstanceId),
+          isFalse);
+    });
+
+    test(
+        'Accessing with instance Id or without, result the same for active instance',
+        () async {
+      final testingToken = 'testing-token';
+
+      await _service.initWithProvidedConfig(instanceId: _employeeInstanceId);
+      when(_mockEmployeeInstance.token).thenReturn(testingToken);
+
+      expect(await _service.getToken(), testingToken);
+      expect(await _service.getToken(instanceId: _employeeInstanceId),
+          testingToken);
+
+      verify(_mockEmployeeInstance.token).called(2);
+    });
+
+    test('error when accesing API of the uniniatialized instance', () async {
+      await _service.initWithProvidedConfig(instanceId: _customerInstanceId);
+      when(_mockCustomerInstance.authenticated).thenReturn(true);
+
+      expect(_service.isAuthenticated(instanceId: _customerInstanceId), isTrue);
+
+      // Wrap the actual call into a function with no argument,
+      // as per required to test `throwsA`.
+      expect(() => _service.isAuthenticated(instanceId: _employeeInstanceId),
+          throwsA(TypeMatcher<UninitializedException>()));
+    });
   });
 }
 
