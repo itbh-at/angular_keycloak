@@ -112,7 +112,7 @@ class SecuredRouterHook implements RouterHook {
       final origin = _directedAwayOrigins[path];
       _directedAwayOrigins.clear();
 
-      if (origin != null) {
+      if (origin != null && params != null) {
         final newParams = NavigationParams(
             queryParameters: {'origin': origin},
             fragment: params.fragment,
