@@ -1,0 +1,5 @@
+# Fail faster
+timeout: 3s
+
+platforms:
+  - chrome

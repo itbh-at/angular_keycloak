@@ -1,6 +1,7 @@
 import 'package:angular/angular.dart' show Injectable, Optional;
 import 'package:keycloak/keycloak.dart';
 
+import 'keycloak_instance_factory.dart';
 import 'keycloak_service.dart';
 import 'keycloak_service_config.dart';
 
@@ -10,6 +11,7 @@ import 'keycloak_service_config.dart';
 /// internal details for the average user.
 @Injectable()
 class KeycloakServiceImpl extends KeycloakService {
+  final KeycloakInstanceFactory _instanceFactory;
   final _config = Map<String, KeycloackServiceInstanceConfig>();
 
   /// Always store the latest initiated [KeycloakInstance].
@@ -20,7 +22,8 @@ class KeycloakServiceImpl extends KeycloakService {
   bool _autoUpdateToken = false;
   int _autoUpdateMinValidity = 30;
 
-  KeycloakServiceImpl(@Optional() KeycloackServiceConfig config) {
+  KeycloakServiceImpl(
+      this._instanceFactory, @Optional() KeycloackServiceConfig config) {
     if (config != null) {
       _config.addEntries(config.instanceConfigs.map(
           (instanceConfig) => MapEntry(instanceConfig.id, instanceConfig)));
@@ -89,7 +92,7 @@ class KeycloakServiceImpl extends KeycloakService {
       initOption.redirectUri = config.redirectUri;
     }
 
-    final instance = KeycloakInstance(config.configFilePath);
+    final instance = _instanceFactory.create(config.configFilePath);
     await instance.init(initOption);
 
     _initiatedInstance = instance;
@@ -110,7 +113,7 @@ class KeycloakServiceImpl extends KeycloakService {
   @override
   List<String> getRealmRoles({String instanceId}) {
     _verifyInitialization(instanceId);
-    return _initiatedInstance.realmAccess.roles;
+    return _initiatedInstance.realmAccess?.roles;
   }
 
   @override
@@ -118,7 +121,7 @@ class KeycloakServiceImpl extends KeycloakService {
     _verifyInitialization(instanceId);
 
     clientId = clientId ?? _initiatedInstance.clientId;
-    return _initiatedInstance.resourceAccess[clientId].roles;
+    return _initiatedInstance.resourceAccess[clientId]?.roles;
   }
 
   @override
@@ -170,7 +173,8 @@ class KeycloakServiceImpl extends KeycloakService {
 
   void _verifyInitialization(String instanceId) {
     if (!isInstanceInitiated(instanceId: instanceId)) {
-      throw Exception('Keycloak instance $instanceId is not initiated.');
+      throw UninitializedException(
+          'Keycloak instance $instanceId is not initiated.');
     }
   }
 }

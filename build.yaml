@@ -3,7 +3,9 @@ targets:
     sources:
       - example/**
       - example-service-only/**
+      - example-directive/**
       - lib/**
+      - test/**
       # Note that it is important to include these in the default target.
       - pubspec.*
     builders:
@@ -11,3 +13,5 @@ targets:
         generate_for:
           - example/main.dart
           - example-service-only/main.dart
+          - example-directive/main.dart
+          - test/**.dart
