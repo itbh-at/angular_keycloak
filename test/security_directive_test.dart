@@ -169,14 +169,18 @@ class SingleInstanceAuthenticationComponent {}
 class MultipleInstanceAuthenticationComponent {}
 
 @Component(selector: 'test-security', directives: [KcSecurity], template: '''
-  <p *kcSecurity="roles:['boss']">the boss</p>
-  <p *kcSecurity="roles:['reader', 'writer']; 
-                  readonlyRoles:['reader']; 
+  <p *kcSecurity="roles:bossRole">the boss</p>
+  <p *kcSecurity="roles:readerWriterRole; 
+                  readonlyRoles:readerRole; 
                   let ro=readonly">
     can read; {{ro ? 'cannot' : 'can'}} write
   </p>
   ''')
-class RoleAuthorizationComponent {}
+class RoleAuthorizationComponent {
+  List<String> bossRole = ['boss'];
+  List<String> readerRole = ['reader'];
+  List<String> readerWriterRole = ['reader', 'writer'];
+}
 
 @Injectable()
 class MockKeycloakService extends Mock implements KeycloakService {}

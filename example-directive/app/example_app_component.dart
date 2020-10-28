@@ -45,6 +45,11 @@ class ExampleAppComponent implements OnInit {
     }
   }
 
+  List<String> bossRole = ['boss'];
+  List<String> supervisorRole = ['supervisor'];
+  List<String> memberRole = ['member'];
+  List<String> vipRole = ['vip'];
+
   void loginCustomer() {
     _login(customerInstanceId);
   }

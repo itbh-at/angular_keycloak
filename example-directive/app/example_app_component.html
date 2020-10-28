@@ -33,12 +33,12 @@
       <h3>Employee Corner</h3>
 
       <!-- The following div will only show for user with 'boss' roles -->
-      <div *kcSecurity="roles: ['boss']">
+      <div *kcSecurity="roles: bossRole">
         <p>Welcome back boss, only you can see this.</p>
       </div>
 
       <!-- Contrary to above, this only show for user without 'boss' roles -->
-      <div *kcSecurity="showWhenDenied: true; roles: ['boss']">
+      <div *kcSecurity="showWhenDenied: true; roles: bossRole">
         <p>Hurry up and work!</p>
       </div>
 
@@ -46,7 +46,7 @@
            There's one different, for user with only 'supervisor' role,
            the variable of 'readonly' will be true. -->
       <div
-        *kcSecurity="readonlyRoles: ['supervisor']; roles: ['boss']; let ro = readonly"
+        *kcSecurity="readonlyRoles: supervisorRole; roles: bossRole; let ro = readonly"
       >
         <h3>This Year Bonus</h3>
         Supervisor can see. Boss can change.
@@ -68,8 +68,8 @@
     <div
       *kcSecurity="
         customerInstanceId;
-        readonlyRoles: ['member'];
-        roles: ['vip'];
+        readonlyRoles: memberRole;
+        roles: vipRole;
         let ro = readonly
       "
     >
